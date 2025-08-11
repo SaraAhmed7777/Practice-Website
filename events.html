@@ -58,18 +58,6 @@
     </div>
   </footer>
 
-  <!-- Load Navbar -->
-  <script>
-    fetch("navbar.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("navbar-placeholder").innerHTML = data;
-        const dropdownScripts = document.createElement("script");
-        dropdownScripts.src = "navbar.js";
-        document.body.appendChild(dropdownScripts);
-      });
-  </script>
-
   <!-- Events Script -->
   <script>
     const events = [
@@ -161,5 +149,7 @@
 
     renderEvents();
   </script>
+  
+  <script src="navbar.js"></script>
 </body>
 </html>
