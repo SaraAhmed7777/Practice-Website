@@ -1,1 +1,166 @@
-<!-- signup.html placeholder -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account | CUNYServe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Steps Section -->
+  <section class="bg-white py-12 px-4">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl font-bold text-[#00539B] mb-4">Join CUNY students making a difference — in just 3 easy steps.</h2>
+      <p class="text-gray-600 mb-10">To build a trusted and impactful volunteer network, all members complete these steps. After this, you're ready to start giving back anywhere, anytime.</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-left">
+        <div class="bg-gray-50 p-6 rounded shadow">
+          <h3 class="text-5xl font-bold text-[#00539B] mb-2">01</h3>
+          <p class="text-lg font-semibold mb-1">Sign up with your CUNY email</p>
+          <p class="text-sm text-gray-600">(You’re on this step)</p>
+        </div>
+        <div class="bg-gray-50 p-6 rounded shadow">
+          <h3 class="text-5xl font-bold text-[#00539B] mb-2">02</h3>
+          <p class="text-lg font-semibold mb-1">Complete a short orientation</p>
+          <p class="text-sm text-gray-600">Takes just 10–15 minutes</p>
+        </div>
+        <div class="bg-gray-50 p-6 rounded shadow">
+          <h3 class="text-5xl font-bold text-[#00539B] mb-2">03</h3>
+          <p class="text-lg font-semibold mb-1">Set up your volunteer profile</p>
+          <p class="text-sm text-gray-600">Include your interests & availability</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Signup Form -->
+  <div class="flex justify-center items-center py-16 px-4">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+      <h2 class="text-2xl font-bold mb-6 text-center text-[#00539B]">Create an Account</h2>
+      <form>
+
+        <!-- Full Name -->
+        <div class="mb-4">
+          <label class="block mb-1 font-medium">Full Name</label>
+          <input type="text" placeholder="Your Name" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00539B]">
+        </div>
+
+        <!-- Email -->
+        <div class="mb-4">
+          <label class="block mb-1 font-medium">CUNY Email</label>
+          <input type="email" placeholder="you@cuny.edu" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00539B]">
+        </div>
+
+        <!-- Password -->
+        <div class="mb-4">
+          <label class="block mb-1 font-medium">Password</label>
+          <input type="password" id="password" placeholder="••••••••" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00539B]">
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-4">
+          <label class="block mb-1 font-medium">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Re-enter password" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00539B]">
+        </div>
+
+        <!-- Campus -->
+        <div class="mb-4">
+          <label class="block mb-1 font-medium">Which CUNY campus are you from?</label>
+          <select id="campusSelect" onchange="toggleOtherCampus()" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00539B]">
+            <option disabled selected>Select your campus</option>
+            <option>Baruch College</option>
+            <option>Brooklyn College</option>
+            <option>Borough of Manhattan Community College (BMCC)</option>
+            <option>Bronx Community College</option>
+            <option>City College of New York (CCNY)</option>
+            <option>College of Staten Island</option>
+            <option>CUNY School of Law</option>
+            <option>Guttman Community College</option>
+            <option>Hostos Community College</option>
+            <option>Hunter College</option>
+            <option>John Jay College of Criminal Justice</option>
+            <option>Kingsborough Community College</option>
+            <option>LaGuardia Community College</option>
+            <option>Lehman College</option>
+            <option>Medgar Evers College</option>
+            <option>New York City College of Technology</option>
+            <option>Queens College</option>
+            <option>Queensborough Community College</option>
+            <option>York College</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <!-- Other Campus -->
+        <div class="mb-4 hidden" id="otherCampusDiv">
+          <label class="block mb-1 font-medium">Please specify your campus</label>
+          <input type="text" placeholder="Your Campus Name" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00539B]">
+        </div>
+
+        <!-- Interests -->
+        <div class="mb-4">
+          <label class="block mb-1 font-medium">What causes interest you most?</label>
+          <select multiple class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00539B]">
+            <option>Education & Tutoring</option>
+            <option>Environmental Projects</option>
+            <option>Healthcare & Wellness</option>
+            <option>Food Drives & Hunger Relief</option>
+            <option>Voter Registration & Advocacy</option>
+            <option>Community Clean-Ups</option>
+            <option>Nonprofit Support</option>
+          </select>
+          <p class="text-sm text-gray-500 mt-1">Hold Ctrl (or Command) to select multiple.</p>
+        </div>
+
+        <!-- Availability -->
+        <div class="mb-4">
+          <label class="block mb-1 font-medium">When are you usually available?</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label><input type="checkbox" class="mr-2"> Weekdays (Day)</label>
+            <label><input type="checkbox" class="mr-2"> Weekdays (Evening)</label>
+            <label><input type="checkbox" class="mr-2"> Weekends</label>
+            <label><input type="checkbox" class="mr-2"> Remote/Flexible</label>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="mb-4">
+          <label class="block mb-1 font-medium">Why do you want to volunteer?</label>
+          <textarea rows="3" placeholder="Share a bit about your goals or background..." class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-[#00539B]"></textarea>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="w-full bg-[#00539B] text-white py-2 rounded hover:bg-blue-700">Sign Up</button>
+      </form>
+
+      <p class="text-sm mt-4 text-center">Already have an account?
+        <a href="login.html" class="text-[#00539B] hover:underline">Log in</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Load Navbar & Toggle Other Campus -->
+  <script>
+    fetch("navbar.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("navbar-placeholder").innerHTML = data;
+      });
+
+    function toggleOtherCampus() {
+      const select = document.getElementById("campusSelect");
+      const otherDiv = document.getElementById("otherCampusDiv");
+      otherDiv.classList.toggle("hidden", select.value !== "Other");
+    }
+  </script>
+
+  <!-- Shared navbar functionality -->
+  <script src="navbar.js"></script>
+
+</body>
+</html>
