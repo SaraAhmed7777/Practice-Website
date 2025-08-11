@@ -114,16 +114,6 @@
   </footer>
 
   <!-- Load Navbar -->
-  <script>
-    fetch("navbar.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("navbar-placeholder").innerHTML = data;
-        const script = document.createElement('script');
-        script.src = 'navbar.js';
-        document.body.appendChild(script);
-      });
-  </script>
-
+  <script src="navbar.js"></script>v
 </body>
 </html>
