@@ -144,14 +144,9 @@
     </div>
   </div>
 
-  <!-- Load Navbar & Toggle Other Campus -->
+<!-- Toggle Other Campus -->
   <script>
-    fetch("navbar.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("navbar-placeholder").innerHTML = data;
-      });
-
+    
     function toggleOtherCampus() {
       const select = document.getElementById("campusSelect");
       const otherDiv = document.getElementById("otherCampusDiv");
@@ -159,7 +154,6 @@
     }
   </script>
 
-  <!-- Shared navbar functionality -->
   <script src="navbar.js"></script>
 
 </body>
