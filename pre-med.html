@@ -11,7 +11,7 @@
 
   <!-- Navbar Placeholder -->
   <div id="navbar-placeholder"></div>
-  <script src="navbar.js"></script>
+
 
   <!-- Hero Section -->
   <section class="bg-[#00539B] text-white py-16 text-center">
@@ -98,14 +98,7 @@
     </div>
   </footer>
 
-  <!-- Load Navbar Content -->
-  <script>
-    fetch("navbar.html")
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById("navbar-placeholder").innerHTML = data;
-      });
-  </script>
+  <script src="navbar.js"></script>
 
 </body>
 </html>
