@@ -1,9 +1,9 @@
 const express = require('express');
-const path = require('path');
 const app = express();
 
-app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+// Serve static assets from repository root
+app.use(express.static(__dirname));
 
 app.post('/join', (req, res) => {
   const { name, email, campus, message } = req.body;
