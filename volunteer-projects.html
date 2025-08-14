@@ -80,72 +80,74 @@
 
   <!-- Script -->
   <script>
-    let projects = [];
-    const projectGrid = document.getElementById("projectGrid");
-    const campusFilter = document.getElementById("campusFilter");
-    const typeFilter = document.getElementById("typeFilter");
-    const formatFilter = document.getElementById("formatFilter");
-    const searchInput = document.getElementById("searchInput");
-    const countDisplay = document.getElementById("projectCount");
+let projects = [];
+const projectGrid = document.getElementById("projectGrid");
 
-    async function loadProjects() {
-      const res = await fetch('data/projects.json', { cache: 'no-store' });
-      projects = await res.json();
-      renderProjects();
-    }
+async function loadProjects() {
+  try {
+    const res = await fetch('data/projects.json?cb=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' loading data/projects.json');
+    projects = await res.json();
 
-    function renderProjects() {
-      const campus = campusFilter.value;
-      const type = typeFilter.value;
-      const format = formatFilter.value;
-      const term = (searchInput.value || "").toLowerCase();
+    console.log('Loaded projects:', projects.length, projects[0]); // sanity log
+    renderProjects();
+  } catch (err) {
+    console.error(err);
+    projectGrid.innerHTML = `
+      <div class="bg-red-50 text-red-700 p-4 rounded">
+        Could not load <code>data/projects.json</code>.
+        Open <a class="underline" href="data/projects.json" target="_blank">data/projects.json</a> to verify.
+      </div>`;
+  }
+}
 
-      const filtered = projects.filter(p =>
-        (campus === "All" || p.campus === campus) &&
-        (type === "All" || p.type === type) &&
-        (format === "All" || p.format === format) &&
-        (
-          !term ||
-          p.title.toLowerCase().includes(term) ||
-          (p.tags || []).join(" ").toLowerCase().includes(term)
-        )
-      );
+function renderProjects() {
+  const term   = (document.getElementById("searchInput")?.value || "").toLowerCase();
+  const format = document.getElementById("formatFilter")?.value || "";
+  const campus = document.getElementById("campusFilter")?.value || "";
+  const type   = document.getElementById("typeFilter")?.value || "";
 
-      countDisplay.textContent = `Showing ${filtered.length} project${filtered.length !== 1 ? 's' : ''}`;
+  const filtered = projects.filter(p =>
+    (format === "" || format === "All" || p.format === format) &&
+    (campus === "" || campus === "All" || p.campus === campus) &&
+    (type   === "" || type   === "All" || p.type   === type) &&
+    (!term || p.title.toLowerCase().includes(term) || (p.tags || []).join(" ").toLowerCase().includes(term))
+  );
 
-      if (filtered.length === 0) {
-        projectGrid.innerHTML = "<div class='text-center text-gray-500 italic'>No projects match your filters.</div>";
-        return;
-      }
+  const countDisplay = document.getElementById("projectCount");
+  if (countDisplay) countDisplay.textContent = `Showing ${filtered.length} project${filtered.length !== 1 ? 's' : ''}`;
 
-      projectGrid.innerHTML = filtered.map(p => {
-        const tags = (p.tags || []).map(t => `<span class="text-xs px-2 py-1 rounded-full bg-gray-100">${t}</span>`).join(" ");
-        const btn = p.applyUrl ? `
-          <a href="${p.applyUrl}" target="_blank" rel="noopener"
-             class="mt-3 inline-block text-sm underline">
-             Apply / Learn more
-          </a>` : "";
+  if (filtered.length === 0) {
+    projectGrid.innerHTML = "<div class='text-center text-gray-500 italic'>No projects match your filters.</div>";
+    return;
+  }
 
-        return `
-          <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
-            <div class="text-sm text-gray-500">${p.org || ""}</div>
-            <h3 class="text-xl font-semibold text-[#0056b3] mt-1">${p.title}</h3>
-            <p class="text-sm text-gray-700 mt-1">${p.campus} · ${p.format} · ${p.type}</p>
-            <p class="text-gray-600 mt-2">${p.description || ""}</p>
-            <div class="mt-3 flex flex-wrap gap-2">${tags}</div>
-            ${btn}
-          </div>
-        `;
-      }).join("");
-    }
+  projectGrid.innerHTML = filtered.map(p => {
+    const tags = (p.tags || []).map(t => `<span class="text-xs px-2 py-1 rounded-full bg-gray-100">${t}</span>`).join(" ");
+    const btn = p.applyUrl ? `
+      <a href="${p.applyUrl}" target="_blank" rel="noopener"
+         class="mt-3 inline-block text-sm underline">Apply / Learn more</a>` : "";
 
-    campusFilter.addEventListener("change", renderProjects);
-    typeFilter.addEventListener("change", renderProjects);
-    formatFilter.addEventListener("change", renderProjects);
-    searchInput.addEventListener("input", renderProjects);
+    return `
+      <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
+        <div class="text-sm text-gray-500">${p.org || ""}</div>
+        <h3 class="text-xl font-semibold text-[#0056b3] mt-1">${p.title}</h3>
+        <p class="text-sm text-gray-700 mt-1">${p.campus} · ${p.format} · ${p.type}</p>
+        <p class="text-gray-600 mt-2">${p.description || p.desc || ""}</p>
+        <div class="mt-3 flex flex-wrap gap-2">${tags}</div>
+        ${btn}
+      </div>`;
+  }).join("");
+}
 
-    loadProjects();
-  </script>
+document.getElementById("formatFilter")?.addEventListener("change", renderProjects);
+document.getElementById("campusFilter")?.addEventListener("change", renderProjects);
+document.getElementById("typeFilter")?.addEventListener("change", renderProjects);
+document.getElementById("searchInput")?.addEventListener("input", renderProjects);
+
+loadProjects();
+</script>
+
 
   <script src="navbar.js"></script>
 </body>
