@@ -61,69 +61,80 @@
 
   <!-- Events Script -->
   <script>
-    let events = [];
-    const eventGrid = document.getElementById("eventGrid");
+let events = [];
+const eventGrid = document.getElementById("eventGrid");
 
-    function formatDate(iso) {
-      if (!iso) return "";
-      const d = new Date(iso + "T00:00:00");
-      return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-    }
+function formatDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
 
-    async function loadEvents() {
-      const res = await fetch('data/events.json', { cache: 'no-store' });
-      events = await res.json();
+async function loadEvents() {
+  try {
+    // IMPORTANT: relative path (no leading slash) for GitHub Project Pages
+    const res = await fetch('data/events.json?cb=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' loading data/events.json');
+    events = await res.json();
 
-      // Sort upcoming first
-      events.sort((a, b) => new Date(a.date) - new Date(b.date));
-      renderEvents();
-    }
+    console.log('Loaded events:', events.length, events[0]); // sanity log
 
-    function renderEvents() {
-      const campus = document.getElementById("campusFilter").value;
-      const type = document.getElementById("typeFilter").value;
-      const format = document.getElementById("formatFilter").value;
+    // sort by date if present
+    events.sort((a,b) => (new Date(a.date || '9999-12-31')) - (new Date(b.date || '9999-12-31')));
+    renderEvents();
+  } catch (err) {
+    console.error(err);
+    eventGrid.innerHTML = `
+      <div class="bg-red-50 text-red-700 p-4 rounded">
+        Could not load <code>data/events.json</code>. 
+        Open <a class="underline" href="data/events.json" target="_blank">data/events.json</a> to verify.
+      </div>`;
+  }
+}
 
-      const filtered = events.filter(e =>
-        (campus === "All" || e.campus === campus) &&
-        (type === "All" || e.type === type) &&
-        (format === "All" || e.format === format)
-      );
+function renderEvents() {
+  const campus = document.getElementById("campusFilter").value;
+  const type = document.getElementById("typeFilter").value;
+  const format = document.getElementById("formatFilter").value;
 
-      if (filtered.length === 0) {
-        eventGrid.innerHTML = "<div class='text-center text-gray-500 italic'>No events match your filters.</div>";
-        return;
-      }
+  const filtered = events.filter(e =>
+    (campus === "All" || e.campus === campus) &&
+    (type === "All" || e.type === type) &&
+    (format === "All" || e.format === format)
+  );
 
-      eventGrid.innerHTML = filtered.map(e => {
-        const dateText = formatDate(e.date);
-        const timeText = [e.startTime, e.endTime].filter(Boolean).join("–");
-        const desc = e.desc || e.description || "";
-        const btn = e.signupUrl ? `
-          <a href="${e.signupUrl}" target="_blank" rel="noopener"
-             class="mt-3 inline-block text-sm underline">
-             Sign up
-          </a>` : "";
+  if (filtered.length === 0) {
+    eventGrid.innerHTML = "<div class='text-center text-gray-500 italic'>No events match your filters.</div>";
+    return;
+  }
 
-        return `
-          <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
-            <h3 class="text-xl font-semibold text-[#0056b3] mb-2">${e.title}</h3>
-            <p class="text-sm text-gray-700 mb-2">
-              <strong>${dateText}${timeText ? " • " + timeText : ""}</strong> · ${e.campus} · ${e.format}
-            </p>
-            <p class="text-gray-600">${desc}</p>
-            ${btn}
-          </div>
-        `;
-      }).join("");
-    }
+  eventGrid.innerHTML = filtered.map(e => {
+    const dateText = formatDate(e.date);
+    const timeText = [e.startTime, e.endTime].filter(Boolean).join("–");
+    const desc = e.desc || e.description || "";
+    const btn = e.signupUrl ? `
+      <a href="${e.signupUrl}" target="_blank" rel="noopener"
+         class="mt-3 inline-block text-sm underline">Sign up</a>` : "";
 
-    document.getElementById("campusFilter").addEventListener("change", renderEvents);
-    document.getElementById("typeFilter").addEventListener("change", renderEvents);
-    document.getElementById("formatFilter").addEventListener("change", renderEvents);
+    return `
+      <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
+        <h3 class="text-xl font-semibold text-[#0056b3] mb-2">${e.title}</h3>
+        <p class="text-sm text-gray-700 mb-2">
+          <strong>${dateText}${timeText ? " • " + timeText : ""}</strong> · ${e.campus} · ${e.format}
+        </p>
+        <p class="text-gray-600">${desc}</p>
+        ${btn}
+      </div>`;
+  }).join("");
+}
 
-    loadEvents();
-  </script>
+document.getElementById("campusFilter").addEventListener("change", renderEvents);
+document.getElementById("typeFilter").addEventListener("change", renderEvents);
+document.getElementById("formatFilter").addEventListener("change", renderEvents);
+
+loadEvents();
+</script>
+
 
   <script src="navbar.js"></script>
 </body>
