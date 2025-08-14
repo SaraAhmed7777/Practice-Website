@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       document.addEventListener('click', e => {
         const isInside = e.target.closest('#getInvolvedWrapper') || e.target.closest('#aboutWrapper');
-        if (!isInside) hideAllDropdowns();v
+        if (!isInside) hideAllDropdowns();
       });
    });
 });
