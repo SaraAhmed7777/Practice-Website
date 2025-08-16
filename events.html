@@ -64,12 +64,12 @@
   </footer>
 
   <!-- page script -->
-  <script>
+<script>
 /**
- * quick notes for us / sabbir:
- * - frontend only. we load data/events.json and render the cards.
- * - Sign up = save locally first (so the button flips); if the event is "external", we open their page after.
- * - when we add backend, replace saveRsvp() with a real POST. rest of this can stay.
+ * me -> sabbir:
+ * - frontend only. loads events list and renders.
+ * - Sign up saves locally first; if event.external === true, we then open externalUrl.
+ * - Later, replace saveRsvp() with a real POST and keep the rest.
  */
 
 let events = [];
@@ -77,97 +77,86 @@ const eventGrid = document.getElementById("eventGrid");
 const toast = document.getElementById("toast");
 const toastMsg = document.getElementById("toastMsg");
 
-/* campus list (25 schools + Non-CUNY)
-   i’m keeping the labels short, but we also handle alias matching in the filter so
-   entries like "CSI" or "BMCC" in JSON still match the dropdown. */
+/* FULL campus list for filter (25 + Non-CUNY) */
 const CUNY_CAMPUSES = [
-  // senior / professional schools
-  "Baruch College",
-  "Brooklyn College",
-  "City College of New York (CCNY)",
-  "Hunter College",
-  "John Jay College of Criminal Justice",
-  "Lehman College",
-  "Medgar Evers College",
-  "Queens College",
-  "College of Staten Island (CSI)",
-  "York College",
-  "New York City College of Technology (City Tech)",
-  "Macaulay Honors College",
-  "CUNY School of Professional Studies (CUNY SPS)",
-  "CUNY School of Labor and Urban Studies (CUNY SLU)",
-  "CUNY School of Law",
-  "The Graduate Center, CUNY",
-  "Craig Newmark Graduate School of Journalism",
-  "CUNY Graduate School of Public Health & Health Policy (CUNY SPH)",
-
-  // community colleges
-  "Borough of Manhattan Community College (BMCC)",
-  "Bronx Community College",
-  "Guttman Community College",
-  "Hostos Community College",
-  "Kingsborough Community College",
-  "LaGuardia Community College",
-  "Queensborough Community College",
-
-  // side-by-side listing for partners not tied to a campus
-  "Non-CUNY"
+  "Baruch College","Brooklyn College","City College of New York (CCNY)","Hunter College","John Jay College of Criminal Justice",
+  "Lehman College","Medgar Evers College","Queens College","College of Staten Island (CSI)","York College",
+  "New York City College of Technology (City Tech)","Macaulay Honors College","CUNY School of Professional Studies (CUNY SPS)",
+  "CUNY School of Labor and Urban Studies (CUNY SLU)","CUNY School of Law","The Graduate Center, CUNY",
+  "Craig Newmark Graduate School of Journalism","CUNY Graduate School of Public Health & Health Policy (CUNY SPH)",
+  "Borough of Manhattan Community College (BMCC)","Bronx Community College","Guttman Community College","Hostos Community College",
+  "Kingsborough Community College","LaGuardia Community College","Queensborough Community College","Non-CUNY"
 ];
 
-/* alias map so our filter works with shorter campus values used in JSON */
-const CAMPUS_ALIASES = {
-  "Borough of Manhattan Community College (BMCC)": ["BMCC"],
-  "City College of New York (CCNY)": ["City College", "CCNY", "The City College of New York"],
-  "College of Staten Island (CSI)": ["CSI", "College of Staten Island"],
-  "New York City College of Technology (City Tech)": ["City Tech"],
-  "CUNY School of Professional Studies (CUNY SPS)": ["CUNY SPS", "School of Professional Studies"],
-  "CUNY School of Labor and Urban Studies (CUNY SLU)": ["CUNY SLU", "School of Labor and Urban Studies"],
-  "CUNY Graduate School of Public Health & Health Policy (CUNY SPH)": ["CUNY SPH", "School of Public Health"]
-};
+function populateCampusFilter() {
+  const sel = document.getElementById("campusFilter");
+  // keep "All Campuses" then add full list
+  CUNY_CAMPUSES.forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+}
 
-/* tiny login check (frontend fake for now) */
 function isLoggedIn() {
   return !!window.isAuthenticated || !!localStorage.getItem("authToken");
 }
 
-/* RSVP store (frontend) — swap this with a real POST later */
+// local RSVP store (swap with backend later)
 async function saveRsvp(eventId) {
   const key = "cunyserve_rsvps";
   const list = JSON.parse(localStorage.getItem(key) || "[]");
   if (!list.includes(eventId)) list.push(eventId);
   localStorage.setItem(key, JSON.stringify(list));
-  return { ok: true };
+  return { ok:true };
 }
 function hasRsvp(eventId) {
   const list = JSON.parse(localStorage.getItem("cunyserve_rsvps") || "[]");
   return list.includes(eventId);
 }
 
-/* toast */
-function showToast(message = "Saved!") {
+function showToast(message="Saved!") {
   toastMsg.textContent = message;
   toast.classList.remove("hidden");
   setTimeout(() => toast.classList.add("hidden"), 1400);
 }
 
-/* date format */
 function formatDate(iso) {
   if (!iso) return "";
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
-/* load JSON */
+function badge(text, extra="") {
+  return `<span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 border ${extra}">${text}</span>`;
+}
+
+/* tolerant fetch that allows // and /* * / style comments in JSON */
+async function fetchEventsTolerant(url) {
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  try {
+    return await res.json(); // normal path
+  } catch {
+    // fallback: parse as text, strip comments + trailing junk, then JSON.parse
+    let txt = await res.text();
+    // remove /* block comments */ and // line comments
+    txt = txt.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|\s)\/\/.*$/gm, '');
+    // remove any accidental trailing characters after the closing ]
+    const endIdx = txt.lastIndexOf(']');
+    if (endIdx !== -1) txt = txt.slice(0, endIdx + 1);
+    return JSON.parse(txt);
+  }
+}
+
 async function loadEvents() {
   try {
-    // keep relative path so it works on GitHub Pages
-    const res = await fetch('data/events.json?cb=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    events = await res.json();
+    // IMPORTANT: relative path for GH Pages
+    events = await fetchEventsTolerant('data/events.json?cb=' + Date.now());
 
-    // sort ascending by date (empty dates go to bottom)
+    // sort by date (empty dates to bottom)
     events.sort((a,b) => (new Date(a.date || '9999-12-31')) - (new Date(b.date || '9999-12-31')));
-
     renderEvents();
   } catch (err) {
     console.error(err);
@@ -179,39 +168,15 @@ async function loadEvents() {
   }
 }
 
-/* badges */
-function badge(text, extra="") {
-  return \`<span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 border \${extra}">\${text}</span>\`;
-}
-
-/* match helper: selected campus vs event campus (with aliases) */
-function campusMatches(selected, eventCampus) {
-  if (selected === "All") return true;
-  if (!eventCampus) return false;
-  // exact match first
-  if (selected === eventCampus) return true;
-
-  // if user picked a long label, check aliases against event value
-  const aliases = CAMPUS_ALIASES[selected] || [];
-  if (aliases.includes(eventCampus)) return true;
-
-  // or if event stored a long label, and selected is one of its aliases
-  for (const [longName, list] of Object.entries(CAMPUS_ALIASES)) {
-    if (eventCampus === longName && list.includes(selected)) return true;
-  }
-  return false;
-}
-
-/* render */
 function renderEvents() {
   const campusSel = document.getElementById("campusFilter").value;
   const typeSel   = document.getElementById("typeFilter").value;
   const fmtSel    = document.getElementById("formatFilter").value;
 
   const filtered = events.filter(e =>
-    campusMatches(campusSel, e.campus) &&
-    (typeSel === "All" || e.type === typeSel) &&
-    (fmtSel === "All"  || e.format === fmtSel)
+    (campusSel === "All" || e.campus === campusSel) &&
+    (typeSel === "All"   || e.type === typeSel) &&
+    (fmtSel === "All"    || e.format === fmtSel)
   );
 
   if (filtered.length === 0) {
@@ -228,59 +193,53 @@ function renderEvents() {
     const needsLogin = e.requiresLogin === true;
     const isExternal = !!(e.external === true && e.externalUrl);
 
-    const statusBadge   = isClosed
-      ? badge("Closed", "border-red-300 bg-red-50 text-red-700")
-      : badge("Open", "border-green-300 bg-green-50 text-green-700");
+    const statusBadge   = isClosed ? badge("Closed", "border-red-300 bg-red-50 text-red-700")
+                                   : badge("Open", "border-green-300 bg-green-50 text-green-700");
     const externalBadge = isExternal ? badge("External signup", "border-blue-300 bg-blue-50 text-blue-700") : "";
     const reqLoginBadge = needsLogin ? badge("Login required", "border-amber-300 bg-amber-50 text-amber-700") : "";
     const alreadyBadge  = hasRsvp(e.id) ? badge("You're signed up", "border-emerald-300 bg-emerald-50 text-emerald-700") : "";
 
-    // internal route we control (even if the JSON provides a signupUrl we still keep them here first)
-    const internalHref = e.signupUrl && e.signupUrl.startsWith("/")
-      ? e.signupUrl
-      : ("signup.html?eventId=" + encodeURIComponent(e.id));
-
+    // IMPORTANT: href="#" so it NEVER navigates away by default
     const btnDisabled = isClosed;
     const btnLabel = isClosed ? "RSVP Closed" : (hasRsvp(e.id) ? "Signed up" : "Sign up");
     const btnClass = btnDisabled
       ? "bg-gray-200 text-gray-500 cursor-not-allowed"
       : "bg-[#0056b3] text-white hover:bg-[#0a4b95]";
 
-    // button always points internally; after we save, we open external (if any)
-    const btn = \`
-      <a href="\${internalHref}"
-         data-event-id="\${e.id}"
-         data-external-url="\${isExternal ? e.externalUrl : ""}"
-         data-requires-login="\${needsLogin ? "true" : "false"}"
-         class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium \${btnClass}"
-         \${btnDisabled ? 'aria-disabled="true"' : ''}
-      >\${btnLabel}</a>\`;
+    const btn = `
+      <a href="#"
+         data-event-id="${e.id}"
+         data-external-url="${isExternal ? e.externalUrl : ""}"
+         data-requires-login="${needsLogin ? "true" : "false"}"
+         class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${btnClass}"
+         ${btnDisabled ? 'aria-disabled="true"' : ''}
+      >${btnLabel}</a>`;
 
-    return \`
+    return `
       <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
-        <h3 class="text-xl font-semibold text-[#0056b3] mb-2">\${e.title}</h3>
+        <h3 class="text-xl font-semibold text-[#0056b3] mb-2">${e.title}</h3>
 
         <div class="flex flex-wrap gap-2 mb-3">
-          \${statusBadge}
-          \${externalBadge}
-          \${reqLoginBadge}
-          \${alreadyBadge}
-          \${badge(e.campus || "—")}
-          \${badge(e.format || "—")}
-          \${e.type ? badge(e.type) : ""}
-          \${(e.tags || []).slice(0,3).map(t => badge("#" + t)).join(" ")}
+          ${statusBadge}
+          ${externalBadge}
+          ${reqLoginBadge}
+          ${alreadyBadge}
+          ${badge(e.campus || "—")}
+          ${badge(e.format || "—")}
+          ${e.type ? badge(e.type) : ""}
+          ${(e.tags || []).slice(0,3).map(t => badge("#" + t)).join(" ")}
         </div>
 
         <p class="text-sm text-gray-700 mb-2">
-          <strong>\${dateText}\${timeText ? " • " + timeText : ""}</strong>
+          <strong>${dateText}${timeText ? " • " + timeText : ""}</strong>
         </p>
-        <p class="text-gray-600 min-h-12">\${desc}</p>
+        <p class="text-gray-600 min-h-12">${desc}</p>
 
-        \${btn}
-      </div>\`;
+        ${btn}
+      </div>`;
   }).join("");
 
-  // click handler (save first, then maybe open external)
+  // click handler: save first, then maybe open external
   eventGrid.querySelectorAll('a[data-event-id]').forEach(a => {
     a.addEventListener('click', async (ev) => {
       const el = ev.currentTarget;
@@ -288,22 +247,19 @@ function renderEvents() {
       const extUrl  = el.getAttribute('data-external-url');
       const requiresLogin = el.getAttribute('data-requires-login') === 'true';
 
-      // closed = do nothing
       if (el.getAttribute('aria-disabled') === 'true') {
         ev.preventDefault();
         return;
       }
 
-      // block if login required and the user isn’t logged in
       if (requiresLogin && !isLoggedIn()) {
         ev.preventDefault();
-        const returnTo = location.pathname + location.search + location.hash;
-        location.href = \`login.html?next=events.html&eventId=\${encodeURIComponent(eventId)}&returnTo=\${encodeURIComponent(returnTo)}\`;
+        alert("Please log in to sign up.");
+        // location.href = "/login"; // when you have a real login page
         return;
       }
 
-      // save RSVP locally so we can show "Signed up" immediately
-      ev.preventDefault();
+      ev.preventDefault(); // never leave immediately
       try {
         el.classList.add('opacity-70','pointer-events-none');
         el.textContent = 'Saving...';
@@ -313,7 +269,6 @@ function renderEvents() {
         el.textContent = 'Signed up';
         el.classList.remove('opacity-70','pointer-events-none');
 
-        // AFTER we save on our site, then we open partner page if one exists
         if (extUrl) window.open(extUrl, "_blank", "noopener");
       } catch (e) {
         console.error(e);
@@ -325,34 +280,12 @@ function renderEvents() {
   });
 }
 
-/* build the campus dropdown once so we always have the full set */
-function populateCampusFilter() {
-  const sel = document.getElementById("campusFilter");
-  // keep "All Campuses" that’s already in there, then append the full list
-  CUNY_CAMPUSES.forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    sel.appendChild(opt);
-  });
-
-  // add quick aliases the user might actually select (so filter can match)
-  // these show up as extra options; if you don’t want them visible, comment this out
-  const extras = ["BMCC","CCNY","CSI","City Tech"];
-  extras.forEach(short => {
-    const opt = document.createElement("option");
-    opt.value = short;
-    opt.textContent = short;
-    sel.appendChild(opt);
-  });
-}
-
-/* wire filters */
+// filters
 document.getElementById("typeFilter").addEventListener("change", renderEvents);
 document.getElementById("formatFilter").addEventListener("change", renderEvents);
 document.getElementById("campusFilter").addEventListener("change", renderEvents);
 
-/* go */
+// boot
 populateCampusFilter();
 loadEvents();
 </script>
