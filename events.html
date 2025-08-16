@@ -9,16 +9,16 @@
 </head>
 
 <body class="font-sans text-gray-800 bg-gray-100">
-  <!-- Shared Navbar -->
+  <!-- Navbar loads in from navbar.js -->
   <div id="navbar-placeholder"></div>
 
-  <!-- Hero Section -->
+  <!-- Top banner -->
   <section class="bg-[#0056b3] text-white text-center py-10 px-4">
     <h2 class="text-3xl font-bold mb-2">Upcoming Volunteer Events</h2>
     <p class="text-lg">Explore civic engagement opportunities across all CUNY campuses and NYC.</p>
   </section>
 
-  <!-- Filter Section -->
+  <!-- Filter dropdowns -->
   <div class="flex flex-wrap justify-center gap-4 my-6 px-4">
     <select id="campusFilter" class="p-2 rounded border">
       <option value="All">All Campuses</option>
@@ -47,8 +47,15 @@
     </select>
   </div>
 
-  <!-- Events Grid -->
+  <!-- Events list goes here -->
   <div id="eventGrid" class="flex flex-wrap justify-center gap-6 px-4 pb-10"></div>
+
+  <!-- Small popup when RSVP is saved -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div class="bg-white shadow-lg border rounded-xl px-4 py-3 text-sm">
+      <span id="toastMsg">Saved!</span>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer class="bg-gray-900 text-white text-center py-4 mt-8">
@@ -62,31 +69,67 @@
 
   <!-- Events Script -->
   <script>
+/**
+ * =========================
+ * NOTES FOR ME / MY TEAM:
+ * =========================
+ * - This is only frontend. It loads events.json and shows the cards.
+ * - When I click "Sign up", it just saves the RSVP in localStorage for now.
+ * - Later on, my teammate can hook it up to the backend (look for BACKEND_TODO comments).
+ */
+
 let events = [];
 const eventGrid = document.getElementById("eventGrid");
+const toast = document.getElementById("toast");
+const toastMsg = document.getElementById("toastMsg");
 
+// Check if the user is logged in
+// (Right now just checks if authToken is in localStorage or a global flag is set)
+// BACKEND_TODO: update this to match real auth later
+function isLoggedIn() {
+  return !!window.isAuthenticated || !!localStorage.getItem("authToken");
+}
+
+// Save RSVP (for now just in localStorage)
+// BACKEND_TODO: later change this to call the real backend API
+async function saveRsvp(eventId) {
+  const key = "cunyserve_rsvps";
+  const list = JSON.parse(localStorage.getItem(key) || "[]");
+  if (!list.includes(eventId)) list.push(eventId);
+  localStorage.setItem(key, JSON.stringify(list));
+  return Promise.resolve({ ok: true }); // fake a "success" response
+}
+
+// Check if user already RSVP’d
+function hasRsvp(eventId) {
+  const key = "cunyserve_rsvps";
+  const list = JSON.parse(localStorage.getItem(key) || "[]");
+  return list.includes(eventId);
+}
+
+// Show quick popup message (toast)
+function showToast(message = "Saved!") {
+  toastMsg.textContent = message;
+  toast.classList.remove("hidden");
+  setTimeout(() => toast.classList.add("hidden"), 1400);
+}
+
+// Format date to something nicer
 function formatDate(iso) {
   if (!iso) return "";
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
-function isLoggedIn() {
-  // Adjust to your auth; this supports either a global flag or a token in localStorage
-  return !!window.isAuthenticated || !!localStorage.getItem("authToken");
-}
-function getAuthHeader() {
-  const token = localStorage.getItem("authToken");
-  return token ? { "Authorization": "Bearer " + token } : {};
-}
 
+// Load events.json file
 async function loadEvents() {
   try {
-    // IMPORTANT: relative path (no leading slash) for GitHub Pages
+    // IMPORTANT: no leading slash, works better on GitHub Pages
     const res = await fetch('data/events.json?cb=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error('HTTP ' + res.status + ' loading data/events.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     events = await res.json();
 
-    // sort by date (missing dates go to bottom)
+    // Sort events by date
     events.sort((a,b) => (new Date(a.date || '9999-12-31')) - (new Date(b.date || '9999-12-31')));
     renderEvents();
   } catch (err) {
@@ -94,15 +137,17 @@ async function loadEvents() {
     eventGrid.innerHTML = `
       <div class="bg-red-50 text-red-700 p-4 rounded max-w-xl">
         Could not load <code>data/events.json</code>.
-        Open <a class="underline" href="data/events.json" target="_blank">data/events.json</a> to verify.
+        <a class="underline" href="data/events.json" target="_blank">Check events.json</a>
       </div>`;
   }
 }
 
+// Badge component (small tags)
 function badge(text, extra="") {
-  return \`<span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 border ${extra}">\${text}</span>\`;
+  return \`<span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 border \${extra}">\${text}</span>\`;
 }
 
+// Render events list
 function renderEvents() {
   const campus = document.getElementById("campusFilter").value;
   const type = document.getElementById("typeFilter").value;
@@ -134,9 +179,10 @@ function renderEvents() {
 
     const externalBadge = isExternal ? badge("External signup", "border-blue-300 bg-blue-50 text-blue-700") : "";
     const reqLoginBadge = needsLogin ? badge("Login required", "border-amber-300 bg-amber-50 text-amber-700") : "";
+    const alreadyRsvped = hasRsvp(e.id) ? badge("You're signed up", "border-emerald-300 bg-emerald-50 text-emerald-700") : "";
 
-    // Progressive enhancement: a normal link exists, but JS will intercept to do RSVP first
-    const signupHref = e.signupUrl || ("/signup?eventId=" + encodeURIComponent(e.id));
+    // Where button should point to
+    const signupHref = e.signupUrl || ("signup.html?eventId=" + encodeURIComponent(e.id));
     const disabledAttrs = isClosed ? 'aria-disabled="true"' : '';
 
     const btn = `
@@ -146,7 +192,7 @@ function renderEvents() {
                 ${isClosed ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-[#0056b3] text-white hover:bg-[#0a4b95]'}
          "
          ${disabledAttrs}
-      >${isClosed ? 'RSVP Closed' : 'Sign up'}</a>`;
+      >${isClosed ? 'RSVP Closed' : (hasRsvp(e.id) ? 'Signed up' : 'Sign up')}</a>`;
 
     return `
       <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
@@ -156,6 +202,7 @@ function renderEvents() {
           ${statusBadge}
           ${externalBadge}
           ${reqLoginBadge}
+          ${alreadyRsvped}
           ${badge(e.campus)}
           ${badge(e.format)}
           ${e.type ? badge(e.type) : ""}
@@ -171,72 +218,61 @@ function renderEvents() {
       </div>`;
   }).join("");
 
-  // Attach enhanced signup handlers (delegated)
+  // Button click handler
   eventGrid.querySelectorAll('a[data-event-id]').forEach(a => {
     a.addEventListener('click', async (ev) => {
       const el = ev.currentTarget;
       const eventId = el.getAttribute('data-event-id');
-      // If closed, let default anchor do nothing (cursor-not-allowed)
+
       if (el.getAttribute('aria-disabled') === 'true') {
         ev.preventDefault();
         return;
       }
 
-      // If not logged in, send to login page (keep target event)
-      if (!isLoggedIn()) {
+      const evt = events.find(x => x.id === eventId);
+      const needsLogin = evt?.requiresLogin === true;
+
+      // If login required but user not logged in → send them to login page
+      if (needsLogin && !isLoggedIn()) {
         ev.preventDefault();
         const returnTo = location.pathname + location.search + location.hash;
-        location.href = \`/login?next=/signup?eventId=\${encodeURIComponent(eventId)}&returnTo=\${encodeURIComponent(returnTo)}\`;
+        location.href = \`login.html?next=events.html&eventId=\${encodeURIComponent(eventId)}&returnTo=\${encodeURIComponent(returnTo)}\`;
         return;
       }
 
-      // Intercept to record RSVP first
+      // RSVP logic (frontend only)
       ev.preventDefault();
       try {
         el.classList.add('opacity-70','pointer-events-none');
         el.textContent = 'Saving...';
 
-        const payload = { eventId };
-        const res = await fetch('/api/rsvp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-          body: JSON.stringify(payload),
-          cache: 'no-store',
-        });
+        await saveRsvp(eventId);
+        showToast('RSVP saved!');
+        el.textContent = 'Signed up';
 
-        if (!res.ok) {
-          throw new Error('RSVP failed: HTTP ' + res.status);
-        }
-
-        // Find event to check if we should redirect externally
-        const evt = events.find(x => x.id === eventId);
-        const shouldGoExternal = evt && evt.external === true && evt.externalUrl;
-
-        // Tiny success UX
-        el.textContent = 'RSVP saved!';
-
-        // Redirect: external if needed, otherwise to internal confirmation
-        if (shouldGoExternal) {
-          // Send them to the partner page after recording RSVP
+        // If this is an external event, redirect out
+        if (evt && evt.external === true && evt.externalUrl) {
           window.location.href = evt.externalUrl;
         } else {
-          // Go to your internal confirmation/details page (adjust as needed)
-          window.location.href = \`/signup/confirm?eventId=\${encodeURIComponent(eventId)}\`;
+          // stay on page (or later go to confirmation page if we add one)
+          el.classList.remove('opacity-70','pointer-events-none');
         }
       } catch (e) {
         console.error(e);
-        alert('Sorry—something went wrong saving your RSVP. Please try again.');
-        el.textContent = 'Sign up';
+        alert('Something went wrong saving your RSVP.');
+        el.textContent = hasRsvp(eventId) ? 'Signed up' : 'Sign up';
         el.classList.remove('opacity-70','pointer-events-none');
       }
     });
   });
 }
 
+// re-render when filters change
 document.getElementById("campusFilter").addEventListener("change", renderEvents);
 document.getElementById("typeFilter").addEventListener("change", renderEvents);
 document.getElementById("formatFilter").addEventListener("change", renderEvents);
 
+// start everything
 loadEvents();
 </script>
 
