@@ -1,24 +1,23 @@
 [
   {
-    // Title of the event (this shows up as the event name on the card)
+    "id": "baruch-college-clean-up-day",
     "title": "Baruch College Clean-Up Day",
-    // Short description of what this event is about
     "desc": "Join us to help clean up Baruch’s campus and surrounding neighborhood.",
-    // Date in YYYY-MM-DD format (easier for sorting/filtering)
     "date": "2025-09-20",
-    // Start and end times for the event
     "startTime": "10:00 AM",
     "endTime": "1:00 PM",
-    // Which campus is hosting
     "campus": "Baruch College",
-    // Type/category of event
     "type": "Clean-Up",
-    // Format = is it in person or virtual
     "format": "In-Person",
-    // External link for signups
-    "signupUrl": "https://www.baruch.cuny.edu/student-affairs/cleanup"
+    "signupUrl": "/signup?eventId=baruch-college-clean-up-day",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.baruch.cuny.edu/student-affairs/cleanup",
+    "tags": []
   },
   {
+    "id": "queens-college-tutoring-drive",
     "title": "Queens College Tutoring Drive",
     "desc": "Volunteer to tutor local high school students in STEM subjects.",
     "date": "2025-09-22",
@@ -27,9 +26,15 @@
     "campus": "Queens College",
     "type": "Tutoring",
     "format": "In-Person",
-    "signupUrl": "https://www.qc.cuny.edu/tutoring-drive"
+    "signupUrl": "/signup?eventId=queens-college-tutoring-drive",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.qc.cuny.edu/tutoring-drive",
+    "tags": []
   },
   {
+    "id": "city-college-food-pantry-support",
     "title": "City College Food Pantry Support",
     "desc": "Help organize and distribute food to students in need.",
     "date": "2025-09-25",
@@ -38,9 +43,15 @@
     "campus": "City College",
     "type": "Food Pantry",
     "format": "In-Person",
-    "signupUrl": "https://www.ccny.cuny.edu/food-pantry"
+    "signupUrl": "/signup?eventId=city-college-food-pantry-support",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.ccny.cuny.edu/food-pantry",
+    "tags": []
   },
   {
+    "id": "hunter-college-mentorship-kickoff",
     "title": "Hunter College Mentorship Kickoff",
     "desc": "Become a mentor for first-year students at Hunter College.",
     "date": "2025-09-28",
@@ -49,9 +60,15 @@
     "campus": "Hunter College",
     "type": "Mentorship",
     "format": "In-Person",
-    "signupUrl": "https://www.hunter.cuny.edu/mentorship"
+    "signupUrl": "/signup?eventId=hunter-college-mentorship-kickoff",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.hunter.cuny.edu/mentorship",
+    "tags": []
   },
   {
+    "id": "brooklyn-college-donation-drive",
     "title": "Brooklyn College Donation Drive",
     "desc": "Donate clothes, supplies, and food items for local shelters.",
     "date": "2025-10-02",
@@ -60,9 +77,15 @@
     "campus": "Brooklyn College",
     "type": "Donation Drive",
     "format": "In-Person",
-    "signupUrl": "https://www.brooklyn.cuny.edu/donation-drive"
+    "signupUrl": "/signup?eventId=brooklyn-college-donation-drive",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.brooklyn.cuny.edu/donation-drive",
+    "tags": []
   },
   {
+    "id": "bmcc-voter-registration-drive",
     "title": "BMCC Voter Registration Drive",
     "desc": "Assist students in registering to vote and learn more about civic duties.",
     "date": "2025-10-05",
@@ -71,9 +94,15 @@
     "campus": "BMCC",
     "type": "Registration Drive",
     "format": "In-Person",
-    "signupUrl": "https://www.bmcc.cuny.edu/voterdrive"
+    "signupUrl": "/signup?eventId=bmcc-voter-registration-drive",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.bmcc.cuny.edu/voterdrive",
+    "tags": []
   },
   {
+    "id": "csi-beach-cleanup",
     "title": "CSI Beach Cleanup",
     "desc": "Help restore Staten Island’s shoreline by removing trash and debris.",
     "date": "2025-10-08",
@@ -82,9 +111,15 @@
     "campus": "CSI",
     "type": "Clean-Up",
     "format": "In-Person",
-    "signupUrl": "https://www.csi.cuny.edu/beach-cleanup"
+    "signupUrl": "/signup?eventId=csi-beach-cleanup",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.csi.cuny.edu/beach-cleanup",
+    "tags": []
   },
   {
+    "id": "cuny-wide-virtual-mentorship-info-session",
     "title": "CUNY-Wide Virtual Mentorship Info Session",
     "desc": "Learn how to get involved as a virtual mentor for CUNY students.",
     "date": "2025-10-10",
@@ -93,9 +128,15 @@
     "campus": "Non-CUNY",
     "type": "Mentorship",
     "format": "Virtual",
-    "signupUrl": "https://www.cuny.edu/virtual-mentorship"
+    "signupUrl": "/signup?eventId=cuny-wide-virtual-mentorship-info-session",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.cuny.edu/virtual-mentorship",
+    "tags": []
   },
   {
+    "id": "nyc-parks-clean-up",
     "title": "NYC Parks Clean-Up",
     "desc": "Partner with NYC Parks to clean and maintain a local park.",
     "date": "2025-10-12",
@@ -104,9 +145,15 @@
     "campus": "Non-CUNY",
     "type": "Clean-Up",
     "format": "In-Person",
-    "signupUrl": "https://www.nycgovparks.org/volunteer"
+    "signupUrl": "/signup?eventId=nyc-parks-clean-up",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.nycgovparks.org/volunteer",
+    "tags": []
   },
   {
+    "id": "new-york-cares-coat-drive",
     "title": "New York Cares Coat Drive",
     "desc": "Collect and donate coats to support families in need during winter.",
     "date": "2025-10-15",
@@ -115,9 +162,15 @@
     "campus": "Non-CUNY",
     "type": "Donation Drive",
     "format": "In-Person",
-    "signupUrl": "https://www.newyorkcares.org/coat-drive"
+    "signupUrl": "/signup?eventId=new-york-cares-coat-drive",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/coat-drive",
+    "tags": []
   },
   {
+    "id": "virtual-tutoring-with-nypl",
     "title": "Virtual Tutoring with NYPL",
     "desc": "Support students online by providing tutoring in reading and math.",
     "date": "2025-10-18",
@@ -126,9 +179,15 @@
     "campus": "Non-CUNY",
     "type": "Tutoring",
     "format": "Virtual",
-    "signupUrl": "https://www.nypl.org/volunteer/tutoring"
+    "signupUrl": "/signup?eventId=virtual-tutoring-with-nypl",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.nypl.org/volunteer/tutoring",
+    "tags": []
   },
   {
+    "id": "hunter-college-food-pantry-support",
     "title": "Hunter College Food Pantry Support",
     "desc": "Assist in distributing food packages to students at Hunter College.",
     "date": "2025-10-20",
@@ -137,9 +196,15 @@
     "campus": "Hunter College",
     "type": "Food Pantry",
     "format": "In-Person",
-    "signupUrl": "https://www.hunter.cuny.edu/food-pantry"
+    "signupUrl": "/signup?eventId=hunter-college-food-pantry-support",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.hunter.cuny.edu/food-pantry",
+    "tags": []
   },
   {
+    "id": "baruch-civic-engagement-fair",
     "title": "Baruch Civic Engagement Fair",
     "desc": "Learn about local volunteer opportunities and student organizations.",
     "date": "2025-10-22",
@@ -148,9 +213,15 @@
     "campus": "Baruch College",
     "type": "Registration Drive",
     "format": "In-Person",
-    "signupUrl": "https://www.baruch.cuny.edu/civic-fair"
+    "signupUrl": "/signup?eventId=baruch-civic-engagement-fair",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.baruch.cuny.edu/civic-fair",
+    "tags": []
   },
   {
+    "id": "queens-college-virtual-mentorship",
     "title": "Queens College Virtual Mentorship",
     "desc": "Mentor incoming freshmen virtually to help them adjust to college life.",
     "date": "2025-10-25",
@@ -159,9 +230,15 @@
     "campus": "Queens College",
     "type": "Mentorship",
     "format": "Virtual",
-    "signupUrl": "https://www.qc.cuny.edu/virtual-mentorship"
+    "signupUrl": "/signup?eventId=queens-college-virtual-mentorship",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.qc.cuny.edu/virtual-mentorship",
+    "tags": []
   },
   {
+    "id": "city-college-donation-drive",
     "title": "City College Donation Drive",
     "desc": "Support local shelters with donations of food, clothes, and supplies.",
     "date": "2025-10-28",
@@ -170,9 +247,15 @@
     "campus": "City College",
     "type": "Donation Drive",
     "format": "In-Person",
-    "signupUrl": "https://www.ccny.cuny.edu/donation-drive"
+    "signupUrl": "/signup?eventId=city-college-donation-drive",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.ccny.cuny.edu/donation-drive",
+    "tags": []
   },
   {
+    "id": "brooklyn-college-mentorship-program",
     "title": "Brooklyn College Mentorship Program",
     "desc": "Kick off event for the mentorship program at Brooklyn College.",
     "date": "2025-11-01",
@@ -181,9 +264,15 @@
     "campus": "Brooklyn College",
     "type": "Mentorship",
     "format": "In-Person",
-    "signupUrl": "https://www.brooklyn.cuny.edu/mentorship"
+    "signupUrl": "/signup?eventId=brooklyn-college-mentorship-program",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.brooklyn.cuny.edu/mentorship",
+    "tags": []
   },
   {
+    "id": "bmcc-virtual-civic-engagement-workshop",
     "title": "BMCC Virtual Civic Engagement Workshop",
     "desc": "Interactive session to learn how to be more civically active.",
     "date": "2025-11-03",
@@ -192,9 +281,15 @@
     "campus": "BMCC",
     "type": "Registration Drive",
     "format": "Virtual",
-    "signupUrl": "https://www.bmcc.cuny.edu/engagement-workshop"
+    "signupUrl": "/signup?eventId=bmcc-virtual-civic-engagement-workshop",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.bmcc.cuny.edu/engagement-workshop",
+    "tags": []
   },
   {
+    "id": "csi-tutoring-marathon",
     "title": "CSI Tutoring Marathon",
     "desc": "Help tutor high schoolers in Staten Island in preparation for exams.",
     "date": "2025-11-06",
@@ -203,9 +298,15 @@
     "campus": "CSI",
     "type": "Tutoring",
     "format": "In-Person",
-    "signupUrl": "https://www.csi.cuny.edu/tutoring-marathon"
+    "signupUrl": "/signup?eventId=csi-tutoring-marathon",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.csi.cuny.edu/tutoring-marathon",
+    "tags": []
   },
   {
+    "id": "nyc-virtual-volunteer-orientation",
     "title": "NYC Virtual Volunteer Orientation",
     "desc": "Get oriented on how to join and participate in NYC volunteer projects.",
     "date": "2025-11-08",
@@ -214,9 +315,15 @@
     "campus": "Non-CUNY",
     "type": "Registration Drive",
     "format": "Virtual",
-    "signupUrl": "https://www.newyorkcares.org/orientation"
+    "signupUrl": "/signup?eventId=nyc-virtual-volunteer-orientation",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/orientation",
+    "tags": []
   },
   {
+    "id": "hunter-college-civic-tech-hackathon",
     "title": "Hunter College Civic Tech Hackathon",
     "desc": "Collaborate on tech solutions for local civic issues.",
     "date": "2025-11-10",
@@ -225,9 +332,15 @@
     "campus": "Hunter College",
     "type": "Mentorship",
     "format": "In-Person",
-    "signupUrl": "https://www.hunter.cuny.edu/hackathon"
+    "signupUrl": "/signup?eventId=hunter-college-civic-tech-hackathon",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.hunter.cuny.edu/hackathon",
+    "tags": []
   },
   {
+    "id": "brooklyn-college-community-clean-up",
     "title": "Brooklyn College Community Clean-Up",
     "desc": "Work with students and neighbors to clean the community area.",
     "date": "2025-11-12",
@@ -236,9 +349,15 @@
     "campus": "Brooklyn College",
     "type": "Clean-Up",
     "format": "In-Person",
-    "signupUrl": "https://www.brooklyn.cuny.edu/community-cleanup"
+    "signupUrl": "/signup?eventId=brooklyn-college-community-clean-up",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.brooklyn.cuny.edu/community-cleanup",
+    "tags": []
   },
   {
+    "id": "queens-college-food-pantry-drive",
     "title": "Queens College Food Pantry Drive",
     "desc": "Volunteer to collect and distribute food to QC students.",
     "date": "2025-11-15",
@@ -247,9 +366,15 @@
     "campus": "Queens College",
     "type": "Food Pantry",
     "format": "In-Person",
-    "signupUrl": "https://www.qc.cuny.edu/food-pantry"
+    "signupUrl": "/signup?eventId=queens-college-food-pantry-drive",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.qc.cuny.edu/food-pantry",
+    "tags": []
   },
   {
+    "id": "staten-island-beach-cleanup",
     "title": "Staten Island Beach Cleanup",
     "desc": "Community-led effort to clean Staten Island beaches.",
     "date": "2025-11-18",
@@ -258,6 +383,11 @@
     "campus": "CSI",
     "type": "Clean-Up",
     "format": "In-Person",
-    "signupUrl": "https://www.csi.cuny.edu/staten-island-beach-cleanup"
+    "signupUrl": "/signup?eventId=staten-island-beach-cleanup",
+    "requiresLogin": true,
+    "rsvpOpen": true,
+    "external": true,
+    "externalUrl": "https://www.csi.cuny.edu/staten-island-beach-cleanup",
+    "tags": []
   }
 ]
