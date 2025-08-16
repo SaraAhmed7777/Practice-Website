@@ -1,3 +1,4 @@
+/* filename: events.html */
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,27 +70,37 @@ function formatDate(iso) {
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
+function isLoggedIn() {
+  // Adjust to your auth; this supports either a global flag or a token in localStorage
+  return !!window.isAuthenticated || !!localStorage.getItem("authToken");
+}
+function getAuthHeader() {
+  const token = localStorage.getItem("authToken");
+  return token ? { "Authorization": "Bearer " + token } : {};
+}
 
 async function loadEvents() {
   try {
-    // IMPORTANT: relative path (no leading slash) for GitHub Project Pages
+    // IMPORTANT: relative path (no leading slash) for GitHub Pages
     const res = await fetch('data/events.json?cb=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status + ' loading data/events.json');
     events = await res.json();
 
-    console.log('Loaded events:', events.length, events[0]); // sanity log
-
-    // sort by date if present
+    // sort by date (missing dates go to bottom)
     events.sort((a,b) => (new Date(a.date || '9999-12-31')) - (new Date(b.date || '9999-12-31')));
     renderEvents();
   } catch (err) {
     console.error(err);
     eventGrid.innerHTML = `
-      <div class="bg-red-50 text-red-700 p-4 rounded">
-        Could not load <code>data/events.json</code>. 
+      <div class="bg-red-50 text-red-700 p-4 rounded max-w-xl">
+        Could not load <code>data/events.json</code>.
         Open <a class="underline" href="data/events.json" target="_blank">data/events.json</a> to verify.
       </div>`;
   }
+}
+
+function badge(text, extra="") {
+  return \`<span class="inline-block text-xs px-2 py-1 rounded-full bg-gray-100 border ${extra}">\${text}</span>\`;
 }
 
 function renderEvents() {
@@ -110,22 +121,116 @@ function renderEvents() {
 
   eventGrid.innerHTML = filtered.map(e => {
     const dateText = formatDate(e.date);
-    const timeText = [e.startTime, e.endTime].filter(Boolean).join("–");
+    const timeText = [e.startTime, e.endTime].filter(Boolean).join(" – ");
     const desc = e.desc || e.description || "";
-    const btn = e.signupUrl ? `
-      <a href="${e.signupUrl}" target="_blank" rel="noopener"
-         class="mt-3 inline-block text-sm underline">Sign up</a>` : "";
+
+    const isClosed = e.rsvpOpen === false;
+    const needsLogin = e.requiresLogin === true;
+    const isExternal = e.external === true && e.externalUrl;
+
+    const statusBadge = isClosed
+      ? badge("Closed", "border-red-300 bg-red-50 text-red-700")
+      : badge("Open", "border-green-300 bg-green-50 text-green-700");
+
+    const externalBadge = isExternal ? badge("External signup", "border-blue-300 bg-blue-50 text-blue-700") : "";
+    const reqLoginBadge = needsLogin ? badge("Login required", "border-amber-300 bg-amber-50 text-amber-700") : "";
+
+    // Progressive enhancement: a normal link exists, but JS will intercept to do RSVP first
+    const signupHref = e.signupUrl || ("/signup?eventId=" + encodeURIComponent(e.id));
+    const disabledAttrs = isClosed ? 'aria-disabled="true"' : '';
+
+    const btn = `
+      <a href="${signupHref}"
+         data-event-id="${e.id}"
+         class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium
+                ${isClosed ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-[#0056b3] text-white hover:bg-[#0a4b95]'}
+         "
+         ${disabledAttrs}
+      >${isClosed ? 'RSVP Closed' : 'Sign up'}</a>`;
 
     return `
       <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
         <h3 class="text-xl font-semibold text-[#0056b3] mb-2">${e.title}</h3>
+
+        <div class="flex flex-wrap gap-2 mb-3">
+          ${statusBadge}
+          ${externalBadge}
+          ${reqLoginBadge}
+          ${badge(e.campus)}
+          ${badge(e.format)}
+          ${e.type ? badge(e.type) : ""}
+          ${(e.tags || []).slice(0,3).map(t => badge("#" + t)).join("")}
+        </div>
+
         <p class="text-sm text-gray-700 mb-2">
-          <strong>${dateText}${timeText ? " • " + timeText : ""}</strong> · ${e.campus} · ${e.format}
+          <strong>${dateText}${timeText ? " • " + timeText : ""}</strong>
         </p>
-        <p class="text-gray-600">${desc}</p>
+        <p class="text-gray-600 min-h-12">${desc}</p>
+
         ${btn}
       </div>`;
   }).join("");
+
+  // Attach enhanced signup handlers (delegated)
+  eventGrid.querySelectorAll('a[data-event-id]').forEach(a => {
+    a.addEventListener('click', async (ev) => {
+      const el = ev.currentTarget;
+      const eventId = el.getAttribute('data-event-id');
+      // If closed, let default anchor do nothing (cursor-not-allowed)
+      if (el.getAttribute('aria-disabled') === 'true') {
+        ev.preventDefault();
+        return;
+      }
+
+      // If not logged in, send to login page (keep target event)
+      if (!isLoggedIn()) {
+        ev.preventDefault();
+        const returnTo = location.pathname + location.search + location.hash;
+        location.href = \`/login?next=/signup?eventId=\${encodeURIComponent(eventId)}&returnTo=\${encodeURIComponent(returnTo)}\`;
+        return;
+      }
+
+      // Intercept to record RSVP first
+      ev.preventDefault();
+      try {
+        el.classList.add('opacity-70','pointer-events-none');
+        el.textContent = 'Saving...';
+
+        const payload = { eventId };
+        const res = await fetch('/api/rsvp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify(payload),
+          cache: 'no-store',
+        });
+
+        if (!res.ok) {
+          throw new Error('RSVP failed: HTTP ' + res.status);
+        }
+
+        // Find event to check if we should redirect externally
+        const evt = events.find(x => x.id === eventId);
+        const shouldGoExternal = evt && evt.external === true && evt.externalUrl;
+
+        // Tiny success UX
+        el.textContent = 'RSVP saved!';
+
+        // Redirect: external if needed, otherwise to internal confirmation
+        if (shouldGoExternal) {
+          // Send them to the partner page after recording RSVP
+          window.location.href = evt.externalUrl;
+        } else {
+          // Go to your internal confirmation/details page (adjust as needed)
+          window.location.href = \`/signup/confirm?eventId=\${encodeURIComponent(eventId)}\`;
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Sorry—something went wrong saving your RSVP. Please try again.');
+        el.textContent = 'Sign up';
+        el.classList.remove('opacity-70','pointer-events-none');
+      }
+    });
+  });
 }
 
 document.getElementById("campusFilter").addEventListener("change", renderEvents);
@@ -134,7 +239,6 @@ document.getElementById("formatFilter").addEventListener("change", renderEvents)
 
 loadEvents();
 </script>
-
 
   <script src="navbar.js"></script>
 </body>
