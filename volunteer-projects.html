@@ -1,4 +1,3 @@
-<!-- filename: volunteer-projects.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,21 +8,22 @@
 </head>
 
 <body class="font-sans text-gray-800 bg-gray-100">
-  <!-- navbar -->
+  <!-- Navbar -->
   <div id="navbar-placeholder"></div>
 
-  <!-- hero -->
+  <!-- Hero -->
   <section class="bg-[#0056b3] text-white text-center py-10 px-4">
     <h1 class="text-3xl font-bold mb-2">Find a Volunteer Project</h1>
     <p class="text-lg">Long-term or recurring opportunities—CUNY & non-CUNY.</p>
   </section>
 
-  <!-- filters -->
+  <!-- Filters -->
   <section class="bg-white py-6">
     <div class="max-w-6xl mx-auto px-4 flex flex-wrap gap-4 items-center justify-between">
       <input id="searchInput" type="text" placeholder="Search titles or tags…" class="w-full md:w-1/3 px-4 py-2 border rounded" />
       <select id="campusFilter" class="w-full md:w-1/4 px-4 py-2 border rounded">
-        <!-- populated by campuses.js -->
+        <option value="All">All Campuses</option>
+        <!-- campuses appended via JS -->
       </select>
       <select id="typeFilter" class="w-full md:w-1/4 px-4 py-2 border rounded">
         <option value="All">All Types</option>
@@ -34,7 +34,6 @@
         <option value="Animal Welfare">Animal Welfare</option>
         <option value="Skills-Based">Skills-Based</option>
         <option value="Civic Action">Civic Action</option>
-        <option value="Civic Engagement">Civic Engagement</option>
         <option value="Health Support">Health Support</option>
         <option value="Disaster Response">Disaster Response</option>
         <option value="International Volunteering">International Volunteering</option>
@@ -48,17 +47,25 @@
         <option value="In-Person">In-Person</option>
         <option value="Remote">Remote</option>
         <option value="Hybrid">Hybrid</option>
+        <option value="Virtual">Virtual</option>
       </select>
     </div>
     <p id="projectCount" class="max-w-6xl mx-auto px-4 mt-2 text-sm text-gray-600"></p>
   </section>
 
-  <!-- grid -->
+  <!-- Projects Grid -->
   <section class="bg-gray-50 py-10">
     <div id="projectGrid" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4"></div>
   </section>
 
-  <!-- footer -->
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div class="bg-white shadow-lg border rounded-xl px-4 py-3 text-sm">
+      <span id="toastMsg">Saved!</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
   <footer class="bg-gray-900 text-gray-300 py-8">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center text-sm px-4">
       <p>&copy; 2025 CUNYServe. All rights reserved.</p>
@@ -70,22 +77,48 @@
     </div>
   </footer>
 
-  <!-- data + logic -->
-  <script src="campuses.js"></script>
-  <script src="signup-flow.js"></script>
+  <!-- Script -->
   <script>
-/**
- * me -> sabbir:
- * - frontend only. reads data/projects.json and renders.
- * - "Sign up" saves locally first, then opens applyUrl in a new tab (if provided).
- * - replace saveSignup() with real API later.
- */
+/* ---------- helpers ---------- */
 
-let projects = [];
-const projectGrid = document.getElementById("projectGrid");
-const countEl = document.getElementById("projectCount");
+const CAMPUS_LIST = [
+  "Baruch College","Brooklyn College","City College of New York (CCNY)","Hunter College","John Jay College of Criminal Justice",
+  "Lehman College","Medgar Evers College","Queens College","College of Staten Island (CSI)","York College",
+  "New York City College of Technology (City Tech)","Macaulay Honors College","CUNY School of Professional Studies (CUNY SPS)",
+  "CUNY School of Labor and Urban Studies (CUNY SLU)","CUNY School of Law","The Graduate Center, CUNY",
+  "Craig Newmark Graduate School of Journalism","CUNY Graduate School of Public Health & Health Policy (CUNY SPH)",
+  "Borough of Manhattan Community College (BMCC)","Bronx Community College","Guttman Community College","Hostos Community College",
+  "Kingsborough Community College","LaGuardia Community College","Queensborough Community College","Non-CUNY"
+];
 
-function isLoggedIn() { return !!window.isAuthenticated || !!localStorage.getItem("authToken"); }
+function populateCampusFilter() {
+  const sel = document.getElementById("campusFilter");
+  CAMPUS_LIST.forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+}
+
+function isLoggedIn() {
+  // frontend-only stub. set localStorage.setItem('authToken','1') to simulate login
+  return !!window.isAuthenticated || !!localStorage.getItem("authToken");
+}
+
+function showToast(message = "Saved!") {
+  const toast = document.getElementById("toast");
+  const toastMsg = document.getElementById("toastMsg");
+  toastMsg.textContent = message;
+  toast.classList.remove("hidden");
+  setTimeout(() => toast.classList.add("hidden"), 1400);
+}
+
+function badge(text) {
+  return `<span class="text-xs px-2 py-1 rounded-full bg-gray-100 border">${text}</span>`;
+}
+
+/* ---------- local signup store (swap with backend later) ---------- */
 
 const SIGNUPS_KEY = "cunyserve_project_signups";
 function hasSignup(id) {
@@ -96,12 +129,14 @@ async function saveSignup(id) {
   const list = JSON.parse(localStorage.getItem(SIGNUPS_KEY) || "[]");
   if (!list.includes(id)) list.push(id);
   localStorage.setItem(SIGNUPS_KEY, JSON.stringify(list));
-  return { ok:true };
+  return { ok: true };
 }
 
-function badge(text) {
-  return `<span class="text-xs px-2 py-1 rounded-full bg-gray-100 border">${text}</span>`;
-}
+/* ---------- data + render ---------- */
+
+let projects = [];
+const projectGrid = document.getElementById("projectGrid");
+const countEl = document.getElementById("projectCount");
 
 async function loadProjects() {
   try {
@@ -117,6 +152,11 @@ async function loadProjects() {
         Open <a class="underline" href="data/projects.json" target="_blank">data/projects.json</a> to verify.
       </div>`;
   }
+}
+
+function normalizeExternalUrl(p) {
+  // prefer explicit externalUrl; fallback to legacy applyUrl
+  return p.externalUrl || p.applyUrl || "";
 }
 
 function renderProjects() {
@@ -140,25 +180,14 @@ function renderProjects() {
   }
 
   projectGrid.innerHTML = filtered.map(p => {
-    const id = p.id || p.title;
-    const tags = (p.tags || []).slice(0, 5).map(t => badge(t)).join(" ");
-    const externalUrl = p.applyUrl || ""; // partner page (optional)
+    const id = p.id || p.title; // if your JSON lacks id, fallback to title
+    const tags = (p.tags || []).slice(0, 6).map(t => badge(t)).join(" ");
+    const extUrl = normalizeExternalUrl(p);
     const signed = hasSignup(id);
 
-    const hasUrl = !!externalUrl;
-    const label  = signed ? "Signed up" : (hasUrl ? "Sign up" : "Sign up");
-    const cls    = signed
-      ? "bg-gray-200 text-gray-500 cursor-default"
-      : "bg-[#0056b3] text-white hover:bg-[#0a4b95]";
-
-    const btn = `
-      <a href="#"
-         data-project-id="${id}"
-         data-external-url="${externalUrl}"
-         data-requires-login="true"
-         class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${cls}">
-         ${label}
-      </a>`;
+    const btnLabel = signed ? "Signed up" : "Sign up";
+    const btnCls = signed ? "bg-gray-200 text-gray-500 cursor-default"
+                          : "bg-[#0056b3] text-white hover:bg-[#0a4b95]";
 
     return `
       <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
@@ -175,38 +204,45 @@ function renderProjects() {
         <p class="text-gray-600 mt-3">${p.description || p.desc || ""}</p>
         <div class="mt-3 flex flex-wrap gap-2">${tags}</div>
 
-        ${btn}
+        <a href="#"
+           data-project-id="${id}"
+           data-external-url="${extUrl}"
+           data-requires-login="true"
+           class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${btnCls}">
+          ${btnLabel}
+        </a>
       </div>`;
   }).join("");
 
-  // signup handler (save first, then maybe open external)
+  // click handler: save locally first, then maybe open external
   projectGrid.querySelectorAll('a[data-project-id]').forEach(a => {
     a.addEventListener('click', async (ev) => {
-      ev.preventDefault(); // NEVER navigate first
+      ev.preventDefault(); // never navigate first
       const el = ev.currentTarget;
       const id = el.getAttribute('data-project-id');
       const extUrl = el.getAttribute('data-external-url');
       const requiresLogin = el.getAttribute('data-requires-login') === 'true';
 
+      if (hasSignup(id)) return; // already signed
+
       if (requiresLogin && !isLoggedIn()) {
         alert("Please log in to sign up.");
-        // location.href = "/login"; // when you have login
+        // location.href = "login.html?next=volunteer-projects.html"; // when ready
         return;
       }
-
-      // if already signed, do nothing
-      if (hasSignup(id)) return;
 
       try {
         el.classList.add('opacity-70','pointer-events-none');
         el.textContent = 'Saving...';
 
         await saveSignup(id);
+
         el.textContent = 'Signed up';
         el.classList.remove('opacity-70','pointer-events-none');
         el.classList.add('bg-gray-200','text-gray-500','cursor-default');
         el.classList.remove('bg-[#0056b3]','hover:bg-[#0a4b95]','text-white');
 
+        showToast('Signup saved!');
         if (extUrl) window.open(extUrl, "_blank", "noopener");
       } catch (e) {
         console.error(e);
@@ -218,14 +254,16 @@ function renderProjects() {
   });
 }
 
+/* ---------- events ---------- */
 document.getElementById("formatFilter")?.addEventListener("change", renderProjects);
 document.getElementById("campusFilter")?.addEventListener("change", renderProjects);
 document.getElementById("typeFilter")?.addEventListener("change", renderProjects);
 document.getElementById("searchInput")?.addEventListener("input", renderProjects);
 
+/* ---------- boot ---------- */
+populateCampusFilter();
 loadProjects();
-</script>
-
+  </script>
 
   <script src="navbar.js"></script>
 </body>
