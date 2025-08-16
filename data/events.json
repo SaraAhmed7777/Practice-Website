@@ -1,3 +1,4 @@
+/* filename: events.json */
 [
   {
     "id": "bmcc-national-poll-worker-recruitment-day-38bc93f2",
@@ -10,9 +11,13 @@
     "format": "In-Person",
     "type": "Registration Drive",
     "location": "Manhattan",
-    "signupUrl": "",
+    "signupUrl": "/signup?eventId=bmcc-national-poll-worker-recruitment-day-38bc93f2",
     "tags": ["cuny","elections","paid"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": false,
+    "externalUrl": "",
+    "rsvpOpen": false
   },
 
   {
@@ -26,9 +31,13 @@
     "format": "Virtual",
     "type": "Tutoring",
     "location": "",
-    "signupUrl": "",
+    "signupUrl": "/signup?eventId=tutoring-for-nyc-youth-f1aaaeac",
     "tags": [],
-    "desc": "Offer academic support to underserved students from the comfort of your home."
+    "desc": "Offer academic support to underserved students from the comfort of your home.",
+    "requiresLogin": true,
+    "external": false,
+    "externalUrl": "",
+    "rsvpOpen": false
   },
   {
     "id": "baruch-food-pantry-drive-174cb14b",
@@ -41,9 +50,13 @@
     "format": "In-Person",
     "type": "Food Pantry",
     "location": "",
-    "signupUrl": "",
+    "signupUrl": "/signup?eventId=baruch-food-pantry-drive-174cb14b",
     "tags": [],
-    "desc": "Collect and distribute food to students facing food insecurity on campus."
+    "desc": "Collect and distribute food to students facing food insecurity on campus.",
+    "requiresLogin": true,
+    "external": false,
+    "externalUrl": "",
+    "rsvpOpen": true
   },
   {
     "id": "queens-park-clean-up-5362e558",
@@ -56,9 +69,13 @@
     "format": "In-Person",
     "type": "Clean-Up",
     "location": "",
-    "signupUrl": "",
+    "signupUrl": "/signup?eventId=queens-park-clean-up-5362e558",
     "tags": [],
-    "desc": "Help restore a local park and build a cleaner community together."
+    "desc": "Help restore a local park and build a cleaner community together.",
+    "requiresLogin": true,
+    "external": false,
+    "externalUrl": "",
+    "rsvpOpen": true
   },
   {
     "id": "brooklyn-shelter-donation-drive-c294c6b2",
@@ -71,9 +88,13 @@
     "format": "In-Person",
     "type": "Donation Drive",
     "location": "",
-    "signupUrl": "",
+    "signupUrl": "/signup?eventId=brooklyn-shelter-donation-drive-c294c6b2",
     "tags": [],
-    "desc": "Drop off clothing, blankets, and toiletries to support local shelters."
+    "desc": "Drop off clothing, blankets, and toiletries to support local shelters.",
+    "requiresLogin": true,
+    "external": false,
+    "externalUrl": "",
+    "rsvpOpen": true
   },
   {
     "id": "voter-registration-campaign-bb0da7f1",
@@ -86,9 +107,13 @@
     "format": "In-Person",
     "type": "Registration Drive",
     "location": "",
-    "signupUrl": "",
+    "signupUrl": "/signup?eventId=voter-registration-campaign-bb0da7f1",
     "tags": [],
-    "desc": "Assist students with voter registration during back-to-school season."
+    "desc": "Assist students with voter registration during back-to-school season.",
+    "requiresLogin": true,
+    "external": false,
+    "externalUrl": "",
+    "rsvpOpen": true
   },
   {
     "id": "sat-mentorship-program-82cf4fa2",
@@ -101,9 +126,13 @@
     "format": "Virtual",
     "type": "Mentorship",
     "location": "",
-    "signupUrl": "",
+    "signupUrl": "/signup?eventId=sat-mentorship-program-82cf4fa2",
     "tags": [],
-    "desc": "Mentor high school juniors and seniors in SAT prep and college readiness."
+    "desc": "Mentor high school juniors and seniors in SAT prep and college readiness.",
+    "requiresLogin": true,
+    "external": false,
+    "externalUrl": "",
+    "rsvpOpen": true
   },
 
   {
@@ -117,9 +146,13 @@
     "format": "In-Person",
     "type": "Food Pantry",
     "location": "86th St, Manhattan",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000JTOCeYAP",
+    "signupUrl": "/signup?eventId=set-up-food-pantry-6b1cb9f9",
     "tags": ["food","setup"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000JTOCeYAP",
+    "rsvpOpen": false
   },
   {
     "id": "pack-backpacks-stand-with-students-9c0e2c1a",
@@ -132,9 +165,13 @@
     "format": "In-Person",
     "type": "Donation Drive",
     "location": "Manhattan",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000yKC9gYAG",
+    "signupUrl": "/signup?eventId=pack-backpacks-stand-with-students-9c0e2c1a",
     "tags": ["school-supplies"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000yKC9gYAG",
+    "rsvpOpen": false
   },
   {
     "id": "deliver-lunch-to-seniors-0d5b4a2b",
@@ -147,9 +184,13 @@
     "format": "In-Person",
     "type": "Mentorship",
     "location": "Midtown & Upper West Side",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000K5LkAYAV",
+    "signupUrl": "/signup?eventId=deliver-lunch-to-seniors-0d5b4a2b",
     "tags": ["seniors","delivery"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000K5LkAYAV",
+    "rsvpOpen": false
   },
 
   {
@@ -163,9 +204,13 @@
     "format": "In-Person",
     "type": "Food Pantry",
     "location": "Staten Island",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000K5NafYAF",
+    "signupUrl": "/signup?eventId=pack-bagged-groceries-si-4c7b1d6a",
     "tags": ["food"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000K5NafYAF",
+    "rsvpOpen": false
   },
   {
     "id": "revitalize-community-garden-si-6f7a3b1c",
@@ -178,9 +223,13 @@
     "format": "In-Person",
     "type": "Clean-Up",
     "location": "Staten Island",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000pCLV5YAO",
+    "signupUrl": "/signup?eventId=revitalize-community-garden-si-6f7a3b1c",
     "tags": ["gardening","painting"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000pCLV5YAO",
+    "rsvpOpen": true
   },
 
   {
@@ -194,9 +243,13 @@
     "format": "In-Person",
     "type": "Food Pantry",
     "location": "Queens",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000JTsCFYA1",
+    "signupUrl": "/signup?eventId=distribute-farm-fresh-grocery-boxes-queens-1a2b3c4d",
     "tags": ["food"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000JTsCFYA1",
+    "rsvpOpen": false
   },
   {
     "id": "pack-bagged-groceries-queens-7e8f9a0b",
@@ -209,9 +262,13 @@
     "format": "In-Person",
     "type": "Food Pantry",
     "location": "Queens",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000JTmLRYA1",
+    "signupUrl": "/signup?eventId=pack-bagged-groceries-queens-7e8f9a0b",
     "tags": ["food"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000JTmLRYA1",
+    "rsvpOpen": true
   },
 
   {
@@ -225,9 +282,13 @@
     "format": "In-Person",
     "type": "Tutoring",
     "location": "Bronx",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI000013f7wBYAQ",
+    "signupUrl": "/signup?eventId=sort-organize-ela-supplies-bronx-cdf470f4",
     "tags": ["books"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI000013f7wBYAQ",
+    "rsvpOpen": true
   },
   {
     "id": "help-kids-techless-tiktoks-bronx-53f0d57f",
@@ -240,9 +301,13 @@
     "format": "In-Person",
     "type": "Mentorship",
     "location": "Bronx",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI000013pH34YAE",
+    "signupUrl": "/signup?eventId=help-kids-techless-tiktoks-bronx-53f0d57f",
     "tags": ["arts","youth"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI000013pH34YAE",
+    "rsvpOpen": true
   },
 
   {
@@ -256,9 +321,13 @@
     "format": "In-Person",
     "type": "Food Pantry",
     "location": "Brooklyn",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000oKTnUYAW",
+    "signupUrl": "/signup?eventId=repack-produce-brooklyn-2b3c4d5e",
     "tags": ["food"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000oKTnUYAW",
+    "rsvpOpen": true
   },
   {
     "id": "sort-incoming-donations-brooklyn-ff4416e0",
@@ -271,9 +340,13 @@
     "format": "In-Person",
     "type": "Donation Drive",
     "location": "Brooklyn",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000yKkNpYAK",
+    "signupUrl": "/signup?eventId=sort-incoming-donations-brooklyn-ff4416e0",
     "tags": ["donations","women","families"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000yKkNpYAK",
+    "rsvpOpen": true
   },
 
   {
@@ -287,9 +360,13 @@
     "format": "Virtual",
     "type": "Mentorship",
     "location": "",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000wcWWxYAM",
+    "signupUrl": "/signup?eventId=college-access-info-session-1d4f3958",
     "tags": ["education","virtual"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000wcWWxYAM",
+    "rsvpOpen": true
   },
   {
     "id": "student-success-info-session-48a6a4dd",
@@ -302,9 +379,13 @@
     "format": "Virtual",
     "type": "Mentorship",
     "location": "",
-    "signupUrl": "https://www.newyorkcares.org/project/701PI00000u9ILdYAM",
+    "signupUrl": "/signup?eventId=student-success-info-session-48a6a4dd",
     "tags": ["students","virtual"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": true,
+    "externalUrl": "https://www.newyorkcares.org/project/701PI00000u9ILdYAM",
+    "rsvpOpen": true
   },
 
   {
@@ -318,8 +399,13 @@
     "format": "In-Person",
     "type": "Clean-Up",
     "location": "Staten Island",
-    "signupUrl": "",
+    "signupUrl": "/signup?eventId=college-of-staten-island-beach-cleanup-381cbf48",
     "tags": ["cuny","environment"],
-    "desc": ""
+    "desc": "",
+    "requiresLogin": true,
+    "external": false,
+    "externalUrl": "",
+    "rsvpOpen": true
   }
 ]
+v
