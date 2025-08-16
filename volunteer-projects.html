@@ -1,4 +1,4 @@
-/* filename: volunteer-projects.html */
+<!-- filename: volunteer-projects.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +9,7 @@
 </head>
 
 <body class="font-sans text-gray-800 bg-gray-100">
-  <!-- navbar comes from navbar.js -->
+  <!-- navbar -->
   <div id="navbar-placeholder"></div>
 
   <!-- hero -->
@@ -23,18 +23,7 @@
     <div class="max-w-6xl mx-auto px-4 flex flex-wrap gap-4 items-center justify-between">
       <input id="searchInput" type="text" placeholder="Search titles or tags…" class="w-full md:w-1/3 px-4 py-2 border rounded" />
       <select id="campusFilter" class="w-full md:w-1/4 px-4 py-2 border rounded">
-        <option value="All">All Campuses</option>
-        <option value="Multi-CUNY">Multi-CUNY</option>
-        <option value="Baruch College">Baruch College</option>
-        <option value="Brooklyn College">Brooklyn College</option>
-        <option value="City Tech">City Tech</option>
-        <option value="CCNY">CCNY</option>
-        <option value="Hunter College">Hunter College</option>
-        <option value="York College">York College</option>
-        <option value="BMCC">BMCC</option>
-        <option value="CSI">CSI</option>
-        <option value="Medgar Evers College">Medgar Evers College</option>
-        <option value="Non-CUNY">Non-CUNY</option>
+        <!-- populated by campuses.js -->
       </select>
       <select id="typeFilter" class="w-full md:w-1/4 px-4 py-2 border rounded">
         <option value="All">All Types</option>
@@ -45,12 +34,14 @@
         <option value="Animal Welfare">Animal Welfare</option>
         <option value="Skills-Based">Skills-Based</option>
         <option value="Civic Action">Civic Action</option>
+        <option value="Civic Engagement">Civic Engagement</option>
         <option value="Health Support">Health Support</option>
         <option value="Disaster Response">Disaster Response</option>
         <option value="International Volunteering">International Volunteering</option>
         <option value="Digital Volunteering">Digital Volunteering</option>
         <option value="Translation">Translation</option>
         <option value="Service Program">Service Program</option>
+        <option value="Logistics">Logistics</option>
       </select>
       <select id="formatFilter" class="w-full md:w-1/4 px-4 py-2 border rounded">
         <option value="All">All Formats</option>
@@ -79,32 +70,25 @@
     </div>
   </footer>
 
-  <!-- script -->
+  <!-- data + logic -->
+  <script src="campuses.js"></script>
+  <script src="signup-flow.js"></script>
   <script>
-/**
- * quick notes for us / sabbir:
- * - this is frontend-only. we load data/projects.json and render the cards.
- * - when someone clicks "Apply", we just save it in localStorage so we show "Applied".
- * - later, if we add a backend, replace saveApply() to call the API. rest can stay the same.
+/* notes for sabbir:
+ * - still frontend-only. we load data/projects.json and render cards.
+ * - we build an INTERNAL /apply?projectId=... link and store their signup locally.
+ * - after confirming, we open the EXTERNAL partner link in a new tab to finish.
+ * - later, replace the TODO in signup-flow.js with real API call.
  */
 
 let projects = [];
 const projectGrid = document.getElementById("projectGrid");
 const countEl = document.getElementById("projectCount");
 
-// simple helpers for "applied" state (frontend demo only)
-const APPLIED_KEY = "cunyserve_projects_applied";
-function hasApplied(id) {
-  const list = JSON.parse(localStorage.getItem(APPLIED_KEY) || "[]");
-  return list.includes(id);
-}
-function saveApply(id) {
-  const list = JSON.parse(localStorage.getItem(APPLIED_KEY) || "[]");
-  if (!list.includes(id)) list.push(id);
-  localStorage.setItem(APPLIED_KEY, JSON.stringify(list));
+function badge(text) {
+  return `<span class="text-xs px-2 py-1 rounded-full bg-gray-100 border">${text}</span>`;
 }
 
-// load JSON (keep relative path so it works on GitHub Pages)
 async function loadProjects() {
   try {
     const res = await fetch('data/projects.json?cb=' + Date.now(), { cache: 'no-store' });
@@ -121,12 +105,6 @@ async function loadProjects() {
   }
 }
 
-// tiny badge
-function badge(text) {
-  return `<span class="text-xs px-2 py-1 rounded-full bg-gray-100 border">${text}</span>`;
-}
-
-// render grid with filters + search
 function renderProjects() {
   const term   = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
   const format = document.getElementById("formatFilter")?.value || "All";
@@ -140,10 +118,7 @@ function renderProjects() {
     (!term || p.title.toLowerCase().includes(term) || (p.tags || []).join(" ").toLowerCase().includes(term))
   );
 
-  // count text
-  if (countEl) {
-    countEl.textContent = `Showing ${filtered.length} project${filtered.length !== 1 ? 's' : ''}`;
-  }
+  if (countEl) countEl.textContent = `Showing ${filtered.length} project${filtered.length !== 1 ? 's' : ''}`;
 
   if (filtered.length === 0) {
     projectGrid.innerHTML = "<div class='text-center text-gray-500 italic'>No projects match your filters.</div>";
@@ -151,25 +126,33 @@ function renderProjects() {
   }
 
   projectGrid.innerHTML = filtered.map(p => {
-    const tags = (p.tags || []).slice(0,5).map(t => badge(t)).join(" ");
-    const applied = hasApplied(p.id || p.title); // fallback to title if id not present in JSON
-    const applyUrl = p.applyUrl || p.signupUrl || ""; // support either field name
+    const id = p.id || p.title;
+    const tags = (p.tags || []).slice(0, 5).map(t => badge(t)).join(" ");
+    const whenText = ""; // projects are rolling; events page shows date/time instead
+    const externalUrl = p.applyUrl || "";            // partner site to finish signup
+    const internalUrl = `/apply?projectId=${encodeURIComponent(id)}`; // our route (analytics later)
+    const applied = window.hasSignedUp && window.hasSignedUp("project", id);
 
-    // button text + behavior
-    const btnLabel = applied ? "Applied" : "Apply / Learn more";
-    const btnState = applied
-      ? 'bg-gray-200 text-gray-500 cursor-default'
-      : 'bg-[#0056b3] text-white hover:bg-[#0a4b95]';
+    // button state
+    const hasUrl = !!externalUrl;
+    const label  = applied ? "Signed up" : (hasUrl ? "Apply" : "No link yet");
+    const cls    = applied
+      ? "bg-gray-200 text-gray-500 cursor-default"
+      : (hasUrl ? "bg-[#0056b3] text-white hover:bg-[#0a4b95]" : "bg-gray-200 text-gray-500 cursor-not-allowed");
 
-    // note: using data attributes so we can handle click in JS (to mark as applied)
-    const btn = applyUrl
-      ? `<a href="${applyUrl}"
-            data-project-id="${p.id || p.title}"
-            target="_blank" rel="noopener"
-            class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${btnState}">
-            ${btnLabel}
-          </a>`
-      : "";
+    const btn = hasUrl
+      ? `<a href="${internalUrl}"
+            data-signup="project"
+            data-id="${id}"
+            data-title="${p.title || ""}"
+            data-org="${p.org || ""}"
+            data-when="${whenText}"
+            data-requires-login="true"
+            data-external-url="${externalUrl}"
+            class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${cls}">
+            ${label}
+         </a>`
+      : `<button type="button" class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${cls}" disabled>${label}</button>`;
 
     return `
       <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
@@ -180,6 +163,7 @@ function renderProjects() {
           ${badge(p.campus || "—")}
           ${badge(p.format || "—")}
           ${p.type ? badge(p.type) : ""}
+          ${p.location ? badge(p.location) : ""}
         </div>
 
         <p class="text-gray-600 mt-3">${p.description || p.desc || ""}</p>
@@ -188,30 +172,16 @@ function renderProjects() {
         ${btn}
       </div>`;
   }).join("");
-
-  // click handler: mark as applied in localStorage (then let link open)
-  projectGrid.querySelectorAll('a[data-project-id]').forEach(a => {
-    a.addEventListener('click', (ev) => {
-      const id = ev.currentTarget.getAttribute('data-project-id');
-      if (!hasApplied(id)) {
-        saveApply(id);
-        // quickly update label without re-rendering everything
-        ev.currentTarget.textContent = "Applied";
-        ev.currentTarget.classList.remove('bg-[#0056b3]','hover:bg-[#0a4b95]','text-white');
-        ev.currentTarget.classList.add('bg-gray-200','text-gray-500','cursor-default');
-      }
-      // we still let the link open in a new tab (target=_blank)
-    });
-  });
 }
 
-// re-render on changes
-document.getElementById("formatFilter")?.addEventListener("change", renderProjects);
-document.getElementById("campusFilter")?.addEventListener("change", renderProjects);
-document.getElementById("typeFilter")?.addEventListener("change", renderProjects);
+// hook up filters + load
 document.getElementById("searchInput")?.addEventListener("input", renderProjects);
+["formatFilter","typeFilter","campusFilter"].forEach(id => {
+  document.getElementById(id)?.addEventListener("change", renderProjects);
+});
 
-// go
+// populate campus list and go
+populateCampusSelect(document.getElementById("campusFilter"));
 loadProjects();
 </script>
 
