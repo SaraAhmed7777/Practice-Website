@@ -74,16 +74,30 @@
   <script src="campuses.js"></script>
   <script src="signup-flow.js"></script>
   <script>
-/* notes for sabbir:
- * - still frontend-only. we load data/projects.json and render cards.
- * - we build an INTERNAL /apply?projectId=... link and store their signup locally.
- * - after confirming, we open the EXTERNAL partner link in a new tab to finish.
- * - later, replace the TODO in signup-flow.js with real API call.
+/**
+ * me -> sabbir:
+ * - frontend only. reads data/projects.json and renders.
+ * - "Sign up" saves locally first, then opens applyUrl in a new tab (if provided).
+ * - replace saveSignup() with real API later.
  */
 
 let projects = [];
 const projectGrid = document.getElementById("projectGrid");
 const countEl = document.getElementById("projectCount");
+
+function isLoggedIn() { return !!window.isAuthenticated || !!localStorage.getItem("authToken"); }
+
+const SIGNUPS_KEY = "cunyserve_project_signups";
+function hasSignup(id) {
+  const list = JSON.parse(localStorage.getItem(SIGNUPS_KEY) || "[]");
+  return list.includes(id);
+}
+async function saveSignup(id) {
+  const list = JSON.parse(localStorage.getItem(SIGNUPS_KEY) || "[]");
+  if (!list.includes(id)) list.push(id);
+  localStorage.setItem(SIGNUPS_KEY, JSON.stringify(list));
+  return { ok:true };
+}
 
 function badge(text) {
   return `<span class="text-xs px-2 py-1 rounded-full bg-gray-100 border">${text}</span>`;
@@ -128,31 +142,23 @@ function renderProjects() {
   projectGrid.innerHTML = filtered.map(p => {
     const id = p.id || p.title;
     const tags = (p.tags || []).slice(0, 5).map(t => badge(t)).join(" ");
-    const whenText = ""; // projects are rolling; events page shows date/time instead
-    const externalUrl = p.applyUrl || "";            // partner site to finish signup
-    const internalUrl = `/apply?projectId=${encodeURIComponent(id)}`; // our route (analytics later)
-    const applied = window.hasSignedUp && window.hasSignedUp("project", id);
+    const externalUrl = p.applyUrl || ""; // partner page (optional)
+    const signed = hasSignup(id);
 
-    // button state
     const hasUrl = !!externalUrl;
-    const label  = applied ? "Signed up" : (hasUrl ? "Apply" : "No link yet");
-    const cls    = applied
+    const label  = signed ? "Signed up" : (hasUrl ? "Sign up" : "Sign up");
+    const cls    = signed
       ? "bg-gray-200 text-gray-500 cursor-default"
-      : (hasUrl ? "bg-[#0056b3] text-white hover:bg-[#0a4b95]" : "bg-gray-200 text-gray-500 cursor-not-allowed");
+      : "bg-[#0056b3] text-white hover:bg-[#0a4b95]";
 
-    const btn = hasUrl
-      ? `<a href="${internalUrl}"
-            data-signup="project"
-            data-id="${id}"
-            data-title="${p.title || ""}"
-            data-org="${p.org || ""}"
-            data-when="${whenText}"
-            data-requires-login="true"
-            data-external-url="${externalUrl}"
-            class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${cls}">
-            ${label}
-         </a>`
-      : `<button type="button" class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${cls}" disabled>${label}</button>`;
+    const btn = `
+      <a href="#"
+         data-project-id="${id}"
+         data-external-url="${externalUrl}"
+         data-requires-login="true"
+         class="mt-4 inline-flex items-center justify-center px-3 py-2 rounded-xl text-sm font-medium ${cls}">
+         ${label}
+      </a>`;
 
     return `
       <div class="bg-white rounded-2xl p-5 shadow w-full max-w-sm">
@@ -172,18 +178,54 @@ function renderProjects() {
         ${btn}
       </div>`;
   }).join("");
+
+  // signup handler (save first, then maybe open external)
+  projectGrid.querySelectorAll('a[data-project-id]').forEach(a => {
+    a.addEventListener('click', async (ev) => {
+      ev.preventDefault(); // NEVER navigate first
+      const el = ev.currentTarget;
+      const id = el.getAttribute('data-project-id');
+      const extUrl = el.getAttribute('data-external-url');
+      const requiresLogin = el.getAttribute('data-requires-login') === 'true';
+
+      if (requiresLogin && !isLoggedIn()) {
+        alert("Please log in to sign up.");
+        // location.href = "/login"; // when you have login
+        return;
+      }
+
+      // if already signed, do nothing
+      if (hasSignup(id)) return;
+
+      try {
+        el.classList.add('opacity-70','pointer-events-none');
+        el.textContent = 'Saving...';
+
+        await saveSignup(id);
+        el.textContent = 'Signed up';
+        el.classList.remove('opacity-70','pointer-events-none');
+        el.classList.add('bg-gray-200','text-gray-500','cursor-default');
+        el.classList.remove('bg-[#0056b3]','hover:bg-[#0a4b95]','text-white');
+
+        if (extUrl) window.open(extUrl, "_blank", "noopener");
+      } catch (e) {
+        console.error(e);
+        alert('Something went wrong saving your signup.');
+        el.textContent = 'Sign up';
+        el.classList.remove('opacity-70','pointer-events-none');
+      }
+    });
+  });
 }
 
-// hook up filters + load
+document.getElementById("formatFilter")?.addEventListener("change", renderProjects);
+document.getElementById("campusFilter")?.addEventListener("change", renderProjects);
+document.getElementById("typeFilter")?.addEventListener("change", renderProjects);
 document.getElementById("searchInput")?.addEventListener("input", renderProjects);
-["formatFilter","typeFilter","campusFilter"].forEach(id => {
-  document.getElementById(id)?.addEventListener("change", renderProjects);
-});
 
-// populate campus list and go
-populateCampusSelect(document.getElementById("campusFilter"));
 loadProjects();
 </script>
+
 
   <script src="navbar.js"></script>
 </body>
