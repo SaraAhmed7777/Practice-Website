@@ -189,23 +189,6 @@
     "tags": ["Queens"]
   },
   {
-    "id": "queens-packed-groceries-2025-08-28",
-    "title": "Pack Bagged Groceries — Queens",
-    "desc": "Assemble food bags to be distributed to community members.",
-    "date": "2025-08-28",
-    "startTime": "10:00 AM",
-    "endTime": "12:00 PM",
-    "campus": "Non-CUNY",
-    "type": "Food Pantry",
-    "format": "In-Person",
-    "signupUrl": "/signup?eventId=queens-packed-groceries-2025-08-28",
-    "requiresLogin": false,
-    "rsvpOpen": true,
-    "external": true,
-    "externalUrl": "https://www.newyorkcares.org/project/701PI00000JTmLRYA1",
-    "tags": ["Queens"]
-  },
-  {
     "id": "bronx-sort-ela-supplies-2025-08-18",
     "title": "Sort and Organize ELA Supplies — Bronx",
     "desc": "Sort and organize books into class sets; label them to ensure nothing goes missing.",
@@ -256,59 +239,6 @@
     "externalUrl": "https://www.newyorkcares.org/project/701PI00000oKTnUYAW",
     "tags": ["Brooklyn"]
   },
-  {
-    "id": "brooklyn-sort-incoming-donations-2025-08-21",
-    "title": "Sort Incoming Donations — Brooklyn",
-    "desc": "Sort clothing, toiletries, and household items for women and families facing housing insecurity.",
-    "date": "2025-08-21",
-    "startTime": "10:00 AM",
-    "endTime": "1:00 PM",
-    "campus": "Non-CUNY",
-    "type": "Donation Drive",
-    "format": "In-Person",
-    "signupUrl": "/signup?eventId=brooklyn-sort-incoming-donations-2025-08-21",
-    "requiresLogin": false,
-    "rsvpOpen": true,
-    "external": true,
-    "externalUrl": "https://www.newyorkcares.org/project/701PI00000yKkNpYAK",
-    "tags": ["Brooklyn"]
-  },
-  {
-    "id": "virtual-college-access-info-session-2025-08-20",
-    "title": "College Access Info Session",
-    "desc": "Learn how you can volunteer on impactful College Access programs.",
-    "date": "2025-08-20",
-    "startTime": "6:00 PM",
-    "endTime": "7:00 PM",
-    "campus": "Non-CUNY",
-    "type": "Registration Drive",
-    "format": "Virtual",
-    "signupUrl": "/signup?eventId=virtual-college-access-info-session-2025-08-20",
-    "requiresLogin": false,
-    "rsvpOpen": true,
-    "external": true,
-    "externalUrl": "https://www.newyorkcares.org/project/701PI00000wcWWxYAM",
-    "tags": ["Virtual"]
-  },
-  {
-    "id": "virtual-student-success-info-session-2025-08-26",
-    "title": "Student Success Info Session",
-    "desc": "Learn how to support children’s learning and become a volunteer.",
-    "date": "2025-08-26",
-    "startTime": "6:00 PM",
-    "endTime": "7:30 PM",
-    "campus": "Non-CUNY",
-    "type": "Registration Drive",
-    "format": "Virtual",
-    "signupUrl": "/signup?eventId=virtual-student-success-info-session-2025-08-26",
-    "requiresLogin": false,
-    "rsvpOpen": true,
-    "external": true,
-    "externalUrl": "https://www.newyorkcares.org/project/701PI00000u9ILdYAM",
-    "tags": ["Virtual"]
-  },
-
-  
   {
     "id": "nyc-parks-clean-up",
     "title": "NYC Parks Clean-Up",
