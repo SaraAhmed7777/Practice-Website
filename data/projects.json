@@ -490,5 +490,17 @@
     "tags": ["long-term","cuny"],
     "description": "Academic mentoring via Executives on Campus.",
     "applyUrl": "https://www.alumni.baruch.cuny.edu/get-involved/executives-on-campus/mentees/prospective-mentees"
-  }
+  },
+  {
+  "id": "baruch-academic-mentoring-3a4b5c6d",
+  "title": "Baruch – Academic Mentoring Program",
+  "org": "Baruch College",
+  "type": "Mentoring",
+  "format": "Hybrid",
+  "campus": "Baruch College",
+  "location": "NYC",
+  "tags": ["long-term", "cuny"],
+  "description": "Academic mentoring via Executives on Campus. Students are paired with alumni mentors to gain career guidance, academic support, and networking opportunities.",
+  "applyUrl": "https://www.alumni.baruch.cuny.edu/get-involved/executives-on-campus/mentees/prospective-mentees"
+}
 ]
