@@ -227,7 +227,7 @@ function renderEvents() {
           ${badge(e.campus || "—")}
           ${badge(e.format || "—")}
           ${e.type ? badge(e.type) : ""}
-          ${(e.tags || []).slice(0,3).map(t => badge("#" + t)).join(" ")}
+          ${(e.tags || []).slice(0,3).map(t => badge(t)).join(" ")}
         </div>
 
         <p class="text-sm text-gray-700 mb-2">
