@@ -85,7 +85,7 @@
     "tags": []
   },
 
-  /* ---------- FROM YOUR OUTLINE: SHORT-TERM (NON-CUNY) ---------- */
+  
   {
     "id": "manhattan-set-up-food-pantry-2025-08-14",
     "title": "Set Up Food Pantry — Manhattan",
@@ -308,7 +308,7 @@
     "tags": ["Virtual"]
   },
 
-  /* ---------- YOUR EXISTING FALL NON-CUNY EVENTS (kept) ---------- */
+  
   {
     "id": "nyc-parks-clean-up",
     "title": "NYC Parks Clean-Up",
@@ -361,7 +361,7 @@
     "tags": []
   },
 
-  /* ---------- YOUR EXISTING HUNTER/QUEENS/BARUCH/ETC (kept, campuses normalized) ---------- */
+  
   {
     "id": "hunter-college-food-pantry-support",
     "title": "Hunter College Food Pantry Support",
@@ -567,7 +567,7 @@
     "tags": []
   },
 
-  /* ---------- CUNY SHORT-TERM FROM OUTLINE ---------- */
+ 
   {
     "id": "csi-beach-cleanup-2025-10-03",
     "title": "College of Staten Island Beach Cleanup",
