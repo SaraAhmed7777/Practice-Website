@@ -116,16 +116,12 @@ const CAMPUS_ALIASES = {
 function normalizeCampus(raw) {
   const v = (raw || "").trim();
   if (CAMPUS_ALIASES[v]) return CAMPUS_ALIASES[v];
-  // if already canonical, return as-is
   if (CAMPUS_LIST.includes(v)) return v;
-  // some entries like "Baruch College" are already canonical
-  // fallback: return original so we at least display something
   return v;
 }
 
 function populateCampusFilter() {
   const sel = document.getElementById("campusFilter");
-  // keep existing "All" option, then append
   CAMPUS_LIST.forEach(name => {
     const opt = document.createElement("option");
     opt.value = name;
@@ -137,7 +133,6 @@ function populateCampusFilter() {
 /* ---------- auth + ui helpers ---------- */
 
 function isLoggedIn() {
-  // frontend-only stub. set localStorage.setItem('authToken','1') to simulate login
   return !!window.isAuthenticated || !!localStorage.getItem("authToken");
 }
 
@@ -153,7 +148,7 @@ function badge(text) {
   return `<span class="text-xs px-2 py-1 rounded-full bg-gray-100 border">${text}</span>`;
 }
 
-/* ---------- local signup store (swap with backend later) ---------- */
+/* ---------- local register store ---------- */
 
 const SIGNUPS_KEY = "cunyserve_project_signups";
 function hasSignup(id) {
@@ -179,7 +174,6 @@ async function loadProjects() {
     if (!res.ok) throw new Error('HTTP ' + res.status + ' loading data/projects.json');
     const raw = await res.json();
 
-    // normalize campus names on load so filtering is consistent
     projects = (raw || []).map(p => ({
       ...p,
       campus: normalizeCampus(p.campus || "")
@@ -191,13 +185,11 @@ async function loadProjects() {
     projectGrid.innerHTML = `
       <div class="bg-red-50 text-red-700 p-4 rounded">
         Could not load <code>data/projects.json</code>.
-        Open <a class="underline" href="data/projects.json" target="_blank">data/projects.json</a> to verify.
       </div>`;
   }
 }
 
 function normalizeExternalUrl(p) {
-  // prefer explicit externalUrl; fallback to legacy applyUrl
   return p.externalUrl || p.applyUrl || "";
 }
 
@@ -225,12 +217,12 @@ function renderProjects() {
   }
 
   projectGrid.innerHTML = filtered.map(p => {
-    const id = p.id || p.title; // if your JSON lacks id, fallback to title
+    const id = p.id || p.title;
     const tags = (p.tags || []).slice(0, 6).map(t => badge(t)).join(" ");
     const extUrl = normalizeExternalUrl(p);
     const signed = hasSignup(id);
 
-    const btnLabel = signed ? "Signed up" : "Sign up";
+    const btnLabel = signed ? "Registered" : "Register";
     const btnCls = signed ? "bg-gray-200 text-gray-500 cursor-default"
                           : "bg-[#0056b3] text-white hover:bg-[#0a4b95]";
 
@@ -259,20 +251,18 @@ function renderProjects() {
       </div>`;
   }).join("");
 
-  // click handler: save locally first, then maybe open external
   projectGrid.querySelectorAll('a[data-project-id]').forEach(a => {
     a.addEventListener('click', async (ev) => {
-      ev.preventDefault(); // never navigate first
+      ev.preventDefault();
       const el = ev.currentTarget;
       const id = el.getAttribute('data-project-id');
       const extUrl = el.getAttribute('data-external-url');
       const requiresLogin = el.getAttribute('data-requires-login') === 'true';
 
-      if (hasSignup(id)) return; // already signed
+      if (hasSignup(id)) return;
 
       if (requiresLogin && !isLoggedIn()) {
-        alert("Please log in to sign up.");
-        // location.href = "login.html?next=volunteer-projects.html"; // when ready
+        alert("Please log in to register.");
         return;
       }
 
@@ -282,30 +272,28 @@ function renderProjects() {
 
         await saveSignup(id);
 
-        el.textContent = 'Signed up';
+        el.textContent = 'Registered';
         el.classList.remove('opacity-70','pointer-events-none');
         el.classList.add('bg-gray-200','text-gray-500','cursor-default');
         el.classList.remove('bg-[#0056b3]','hover:bg-[#0a4b95]','text-white');
 
-        showToast('Signup saved!');
+        showToast('Registration saved!');
         if (extUrl) window.open(extUrl, "_blank", "noopener");
       } catch (e) {
         console.error(e);
-        alert('Something went wrong saving your signup.');
-        el.textContent = 'Sign up';
+        alert('Something went wrong saving your registration.');
+        el.textContent = 'Register';
         el.classList.remove('opacity-70','pointer-events-none');
       }
     });
   });
 }
 
-/* ---------- filter events ---------- */
 document.getElementById("formatFilter")?.addEventListener("change", renderProjects);
 document.getElementById("campusFilter")?.addEventListener("change", renderProjects);
 document.getElementById("typeFilter")?.addEventListener("change", renderProjects);
 document.getElementById("searchInput")?.addEventListener("input", renderProjects);
 
-/* ---------- boot ---------- */
 populateCampusFilter();
 loadProjects();
 </script>
